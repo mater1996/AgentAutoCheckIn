@@ -1,0 +1,13 @@
+✔ unknown or malformed observations cannot imply completion or no remaining tasks (0.370708ms)
+✔ pure observation validator is usable by callers with untrusted input (0.048458ms)
+✔ reward threshold does not count as exhausted task quota (0.0715ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 56.626125
+
+exit_code=0

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "checkin": {
+      "type": "stdio",
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/start-mcp",
+      "args": [],
+      "env": {
+        "CHECKIN_WORKSPACE": "${CHECKIN_WORKSPACE}"
+      }
+    }
+  }
+}

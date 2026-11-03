@@ -1,0 +1,55 @@
+STAGE select_task
+STAGE open_task
+STAGE select_task
+✖ completion text cannot seed ordinary browse requirement evidence in open_task (23.515917ms)
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE open_task
+STAGE task_receipt
+✔ handoff refuses old attempt, foreign owner, old frame, login and unknown dispatch without another entry (53.433125ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.223417
+
+✖ failing tests:
+
+test at tests/staged-ai-task-recovery.test.ts:1:11895
+✖ completion text cannot seed ordinary browse requirement evidence in open_task (23.515917ms)
+  AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+  
+  'completed'
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/staged-ai-task-recovery.test.ts:113:9)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'completed',
+    expected: 'completed',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

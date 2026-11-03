@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+# The host expands plugin-root variables; workspace identity is always explicit.
+if [ -z "${CHECKIN_WORKSPACE:-}" ]; then
+  printf '%s\n' 'CHECKIN_WORKSPACE must explicitly name the real checkin workspace' >&2
+  exit 64
+fi
+case "$CHECKIN_WORKSPACE" in
+  /*) ;;
+  *) printf '%s\n' 'CHECKIN_WORKSPACE must be an absolute path' >&2; exit 64 ;;
+esac
+if [ ! -d "$CHECKIN_WORKSPACE" ] || [ ! -f "$CHECKIN_WORKSPACE/package.json" ] || [ ! -f "$CHECKIN_WORKSPACE/runner/mcp/server.ts" ] || [ ! -x "$CHECKIN_WORKSPACE/node_modules/.bin/tsx" ]; then
+  printf '%s\n' 'CHECKIN_WORKSPACE must contain package.json, runner/mcp/server.ts and executable node_modules/.bin/tsx' >&2
+  exit 64
+fi
+if ! node -e 'const fs = require("node:fs"); const path = require("node:path"); try { const root = fs.realpathSync(process.argv[1]); const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")); if (pkg.name !== "checkin-platform") process.exit(1); } catch { process.exit(1); }' "$CHECKIN_WORKSPACE"; then
+  printf '%s\n' 'CHECKIN_WORKSPACE must be a real checkin-platform project' >&2
+  exit 64
+fi
+CHECKIN_WORKSPACE=$(node -e 'process.stdout.write(require("node:fs").realpathSync(process.argv[1]))' "$CHECKIN_WORKSPACE")
+export CHECKIN_WORKSPACE
+exec "$CHECKIN_WORKSPACE/node_modules/.bin/tsx" "$CHECKIN_WORKSPACE/runner/mcp/server.ts" "$@"

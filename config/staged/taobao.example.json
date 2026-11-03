@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "scope": {
+    "appId": "taobao",
+    "accountId": "tb_main",
+    "activityId": "tb_coin",
+    "userId": 0
+  },
+  "package": "com.taobao.taobao",
+  "activityName": "淘金币",
+  "panelMarker": "赚金币抵钱",
+  "assetId": "taobao_coins",
+  "planFile": "data/evidence/plans/ocr-inventory-20261101-review-v2.json",
+  "knowledgeIndex": "data/task-records-v2/index.json",
+  "evidenceRoot": "evidence",
+  "model": {
+    "baseUrl": "http://127.0.0.1:3425/v1",
+    "name": "codex/gpt-6.1-terra",
+    "apiKeyEnv": "CHECKIN_VISION_API_KEY",
+    "timeoutMs": 45000
+  },
+  "limits": {
+    "maxTasks": 1,
+    "sessionMs": 600000,
+    "stageMs": 90000,
+    "agentCalls": 30,
+    "stageActions": 8,
+    "inventoryPages": 7,
+    "maxReturns": 3
+  },
+  "taskPolicy": "只做当前App内独立普通浏览；完整当前说明明确允许时可选原规划中的浏览任务。未知新名称由Agent按实际页面要求判断，不从名称猜流程。搜索、游戏、邀请、安装、外部App、答题均不在本次范围。原规划pending/skip任务仍保持跳过。",
+  "constraints": [
+    "不购物、不加购、不支付、不充值、不提现、不兑换、不填手机号或地址",
+    "不切账号、不授权第三方登录、不处理密码验证码或人机验证",
+    "只完成一项的一轮，不领档位或其他奖励",
+    "不能因点击传输成功或等待足时认定完成，必须取得本次任务回执与正确资产页核验",
+    "不启用调度；结束后息屏并读回状态"
+  ],
+  "stages": {
+    "open_app": {
+      "goal": "打开目标应用并确认目标包与Android用户空间。进入活动导航前必须从截图确认实际页面，不把前台包当首页。",
+      "checkpoint": "target_app_foreground"
+    },
+    "enter_activity": {
+      "goal": "到达目标淘金币活动；若已在其任务列表，视为已满足并保留当前页面。只导航，不做任务不领取。",
+      "checkpoint": "activity_visible"
+    },
+    "open_list": {
+      "goal": "展开目标活动的赚金币任务列表，明确看到实际任务行、次数、操作按钮；活动首页不算列表。",
+      "checkpoint": "task_list_visible"
+    },
+    "open_task": {
+      "goal": "仅打开当前已选择的一项任务，确认已经离开列表；读取落地页真实要求，明确独立普通浏览可行。",
+      "checkpoint": "task_destination_visible"
+    },
+    "task_receipt": {
+      "goal": "按当前目的页实际普通浏览要求完成一轮，保存属于本次任务的明确完成回执，不返回、不购买或输入。",
+      "checkpoint": "task_receipt_captured"
+    },
+    "return_list": {
+      "goal": "只返回本次活动任务列表，每次动作后观察；遇挽留弹窗由Agent依据当前截图建议，不点击其他任务或奖励。",
+      "checkpoint": "task_list_returned"
+    }
+  }
+}

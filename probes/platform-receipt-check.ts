@@ -1,0 +1,11 @@
+import '../runner/model';
+import fs from 'node:fs';
+import path from 'node:path';
+import { runActivity } from '../runner/signin';
+const taskName = process.argv[2];
+if (!taskName) throw new Error('usage: tsx probes/platform-receipt-check.ts <exact task name>');
+const result = await runActivity({ activityId: 'tb_coin', currentPage: true, maxTasks: 1, taskName, budgetMs: 300_000, cacheStrategy: 'read-only', candidateYaml: process.argv[3] });
+const root = path.resolve('evidence/跨天闭环-2026-10-31');
+fs.mkdirSync(root, {recursive: true});
+fs.writeFileSync(path.join(root, `platform-${result.runId}.json`), JSON.stringify(result, null, 2));
+console.log(JSON.stringify(result, null, 2));

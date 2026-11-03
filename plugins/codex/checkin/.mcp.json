@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "checkin": {
+      "type": "stdio",
+      "command": "./bin/start-mcp",
+      "args": [],
+      "cwd": ".",
+      "env_vars": [
+        "CHECKIN_WORKSPACE",
+        "CHECKIN_ALLOW_DEVICE",
+        "CHECKIN_ALLOW_RESTART"
+      ]
+    }
+  }
+}

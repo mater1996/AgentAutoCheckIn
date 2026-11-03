@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {readAiPanel,loadAiPanel} from '../runner/staged/ai-panel-reader.ts';
+test('run228 selected target accepts whole-row title bounds while keeping actual button coordinates',async t=>{
+ const source=path.resolve('evidence/staged-2026-11-02T12-45-22-333Z'),id='36ba3c09-1234-4447-b7d4-8449c7bb8a68';const dir=fs.mkdtempSync(path.join(process.env.TMPDIR!,'selected-target-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const frame=JSON.parse(fs.readFileSync(path.join(source,id+'.json'),'utf8'));const raw=JSON.parse(fs.readFileSync(path.join(source,'ai-panel-bc0e2e59-9916-4487-84f0-af26fec06f22.response.json'),'utf8'));frame.path=path.join(dir,id+'.png');fs.copyFileSync(path.join(source,id+'.png'),frame.path);delete frame.aiPanelEvidence;
+ const e=await readAiPanel({frame,owner:{package:frame.package,userId:frame.userId},evidenceDir:dir,maxMs:1000,readMode:{purpose:'selected-row',task:{name:raw.task.name,instruction:raw.task.instruction,done:raw.task.done,total:raw.task.total}},model:{query:async()=>raw}});assert.equal(e.status,'accepted');assert.deepEqual(loadAiPanel({...frame,aiPanelEvidence:e})?.tasks[0].point,[944,1437]);
+});

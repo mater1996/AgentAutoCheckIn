@@ -1,0 +1,9 @@
+app: pinduoduo
+name: 拼多多
+package: com.xunmeng.pinduoduo
+launch_wait: 8.0
+window: 10:00-15:00
+verify_any:
+- 已签到
+- 已领取
+- 今日已签

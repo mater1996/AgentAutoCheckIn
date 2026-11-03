@@ -1,0 +1,10 @@
+app: xingin
+name: 小红书
+package: com.xingin.xhs
+launch_wait: 6.0
+window: 09:00-21:00
+verify_any:
+- 已签到
+- 今日已签
+- 签到成功
+- 已打卡

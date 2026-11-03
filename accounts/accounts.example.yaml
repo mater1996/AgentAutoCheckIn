@@ -1,0 +1,66 @@
+# 账号表 · 示例（复制为 accounts.yaml 后填真实信息）
+#
+# id        全局唯一，账本主键，建议 <app>_<别名>
+# app       App 逻辑名，对应 activities/<app>.yaml
+# package   Android 包名
+# space     main 主空间 / dual 应用双开
+# login     cookie 持久登录 / sms 需短信码 / manual 每次人工
+# enabled   是否参与每日调度
+
+accounts:
+  - id: jd_main
+    app: jingdong
+    package: com.jingdong.app.mall
+    space: main
+    login: cookie
+    enabled: true
+    note: 主账号（实测已登录）
+
+  - id: tb_main
+    app: taobao
+    package: com.taobao.taobao
+    space: main
+    login: cookie
+    enabled: true
+    note: 主账号（实测已登录）
+
+  # 以下 4 个实测掉线，登录后才能启用
+  - id: mt_main
+    app: meituan
+    package: com.sankuai.meituan
+    space: main
+    login: cookie
+    enabled: false
+    note: 实测停在 LoginActivity
+
+  - id: pdd_main
+    app: pinduoduo
+    package: com.xunmeng.pinduoduo
+    space: main
+    login: cookie
+    enabled: false
+    note: 实测 DeviceOfflineRemindActivity
+
+  - id: xhs_main
+    app: xingin
+    package: com.xingin.xhs
+    space: main
+    login: cookie
+    enabled: false
+    note: 实测被其他设备挤下线
+
+  - id: ne_main
+    app: netease_music
+    package: com.netease.cloudmusic
+    space: main
+    login: sms
+    enabled: false
+    note: 实测停在验证码登录页
+
+  # 应用双开示例（先在手机上开双开，再填这里）
+  # - id: jd_second
+  #   app: jingdong
+  #   package: com.jingdong.app.mall      # 双开实例包名体检时自动纠正
+  #   space: dual
+  #   login: sms
+  #   enabled: false

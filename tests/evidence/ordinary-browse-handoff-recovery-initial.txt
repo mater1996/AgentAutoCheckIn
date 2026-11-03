@@ -1,0 +1,169 @@
+STAGE select_task
+STAGE open_task
+STAGE settle
+STAGE task_receipt
+STAGE select_task
+✔ run236 saved ordinary browse response hands open_task to the first new completed receipt without another model or input (51.624833ms)
+STAGE open_task
+STAGE task_receipt
+STAGE settle
+STAGE settle
+STAGE select_task
+✔ current completion keywords precede geometry contracts and keep same-attempt stable settlement (14.914917ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current AI receipt can read original pixels when OCR failed without using its quote as a click target (10.891292ms)
+STAGE open_task
+STAGE select_task
+✔ current AI can confirm the ordinary destination directly from pixels when OCR is unavailable (7.886709ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current keyword policy defers negative/tutorial text and refuses stale owner or attempt (70.110167ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current keyword receipt ignores ordinary product confirmation and authorization wording (9.008125ms)
+STAGE open_task
+STAGE task_receipt
+STAGE settle
+STAGE settle
+STAGE select_task
+✔ explicit recovery consults one current-frame AI only after bound entry local unknown, preserving receipt and two-frame settlement (9.863541ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ unknown local receipt can use one AI wait through the existing dispatcher and reobserve before completion (8.881667ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovery rejects wrong task binding, panel quotations, unsafe requirements and unverified completion (52.246833ms)
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ unknown recovery dispatch and another attempt never cause another AI action or entry (9.54225ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovered coordinate taps cannot target sensitive controls or bare coordinates (24.013667ms)
+STAGE open_task
+STAGE select_task
+✖ run219 original IP skeleton frame reaches AI with actual entry context and bounded wait without address tap (39.941791ms)
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE select_task
+✔ unknown return modal uses one bound current-frame AI back without granting task or global close authority (15.175042ms)
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE return_list
+STAGE select_task
+✔ unknown first system return is never replayed on stage reentry (10.254958ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ an unconfirmed recovered tap cannot be proposed again on the next frame (7.63375ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovery wait with configured continuous scrolling does not enter the scroll revalidation hook (7.283208ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+✔ local evidence and disabled recovery retain the old no-model contract (23.164625ms)
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+✔ wrong owner, stale source, exhausted allowance and failed model stop before recovery actions (31.297417ms)
+STAGE open_task
+✔ model elapsed time expires original authority instead of renewing capturedAt (6.274042ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 491.063708
+
+✖ failing tests:
+
+test at tests/staged-ai-task-recovery.test.ts:1:19959
+✖ run219 original IP skeleton frame reaches AI with actual entry context and bounded wait without address tap (39.941791ms)
+  AssertionError [ERR_ASSERTION]: loading/wait never implies completion
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/staged-ai-task-recovery.test.ts:211:74)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'completed',
+    expected: 'completed',
+    operator: 'notStrictEqual',
+    diff: 'simple'
+  }

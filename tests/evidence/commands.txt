@@ -1,0 +1,29 @@
+Workdir: /Users/mater/Project/checkin-platform
+
+RED (each output records the real exit code):
+node --import tsx --test tests/objective.test.ts
+  objective-red.txt: tests 3, pass 0, fail 3, exit_code=1
+node --import tsx --test tests/probe.test.ts
+  probe-red.txt: tests 4, pass 0, fail 4, exit_code=1
+node --experimental-test-module-mocks --disable-warning=ExperimentalWarning --import tsx --test tests/loop.test.ts
+  loop-red.txt: tests 7, pass 1, fail 6, exit_code=1
+node --experimental-test-module-mocks --disable-warning=ExperimentalWarning --import tsx --test --test-name-pattern='recovery step failure' tests/loop.test.ts
+  recovery-red.txt: tests 1, pass 0, fail 1, exit_code=1
+
+FINAL GREEN:
+node --experimental-test-module-mocks --disable-warning=ExperimentalWarning --import tsx --test tests/objective.test.ts tests/probe.test.ts tests/loop.test.ts
+  final-green.txt: tests 19, pass 19, fail 0, exit_code=0
+
+TYPECHECK:
+node_modules/.bin/tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --skipLibCheck runner/objective.ts runner/probe.ts runner/loop.ts tests/objective.test.ts tests/probe.test.ts tests/loop.test.ts
+  typecheck.txt: runner/config.ts(310,32): error TS2339: Property 'entry_activity_any' does not exist on type 'PrepCfg'. exit_code=1
+
+All loop fixtures mock adb with a throwing shell implementation and mock the step I/O boundary before importing the real loop. No phone, model service, database, or scheduler is invoked.
+
+Parent integration:
+- objective.ts exports isValidProbeState(state: unknown): boolean.
+- Validation requires safe integers, done >= 0, total > 0, done <= total, tasksLeft >= 0. Saturation done === total is valid.
+- ProbeResult adds optional valid?: boolean for backward compatibility; runProbes always sets it. Invalid result state remains the existing numeric shape, with explicit unknown sentinel {done:0,total:0,tasksLeft:-1}.
+- Do not use total-done for task quota, done>=total for all-task completion, or any unknown observation for completion/progress/tier decisions.
+- loop.ts exports crossedTier(before, after, valueModel), which rejects either invalid state.
+- Invalid observation retries: initial probe plus 2 retries; at most one configured recoverSteps pass plus a second probe batch per reading. Entry retry budget is preserved. ensurePanel false/throw stops immediately without consuming a task.

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>手机每日签到平台 · 技术方案 v1.1</title>
+<style>
+@page { size: A4; margin: 16mm 14mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 10.5pt; line-height: 1.72; color: #1a1a1a;
+  max-width: 100%; margin: 0;
+}
+h1 {
+  font-size: 21pt; margin: 0 0 6pt; padding-bottom: 8pt;
+  border-bottom: 3px solid #111; letter-spacing: -0.3pt;
+}
+h2 {
+  font-size: 14pt; margin: 22pt 0 8pt; padding-left: 9pt;
+  border-left: 4px solid #2b6cb0; page-break-after: avoid;
+}
+h3 {
+  font-size: 11.5pt; margin: 15pt 0 6pt; color: #2b4a6f;
+  page-break-after: avoid;
+}
+p { margin: 5pt 0; }
+ul, ol { margin: 5pt 0; padding-left: 20pt; }
+li { margin: 2.5pt 0; }
+strong { color: #000; font-weight: 600; }
+code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 9pt; background: #f2f4f7; padding: 1pt 3.5pt;
+  border-radius: 3pt; color: #b03060;
+}
+pre {
+  background: #f7f8fa; border: 1px solid #e2e5ea; border-radius: 4pt;
+  padding: 8pt 10pt; overflow-x: auto; page-break-inside: avoid;
+  margin: 7pt 0;
+}
+pre code {
+  background: none; padding: 0; color: #1f2933; font-size: 8.6pt;
+  line-height: 1.5; white-space: pre-wrap; word-break: break-all;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 8pt 0;
+  font-size: 9.2pt; page-break-inside: avoid;
+}
+th {
+  background: #eef2f7; font-weight: 600; text-align: left;
+  border: 1px solid #ccd3dd; padding: 5pt 7pt;
+}
+td { border: 1px solid #dfe3e9; padding: 5pt 7pt; vertical-align: top; }
+tr:nth-child(even) td { background: #fafbfc; }
+hr { border: none; border-top: 1px solid #e5e7eb; margin: 16pt 0; }
+blockquote {
+  margin: 7pt 0; padding: 6pt 11pt; background: #fffbe6;
+  border-left: 3px solid #e0b400; color: #5c4a00;
+}
+</style></head>
+<body><h1>手机每日签到平台 · 最终技术方案</h1>
+<p>版本：v1.1 · 2026-10-29<br>
+工作空间：<code>/Users/mater/Project/android-checkin</code><br>
+设备：Xiaomi 12S Pro（HyperOS 3.0.2.0 / Android 15）· adb serial <code>3d8a7934</code><br>
+主机：Mac（Apple M6 / 24GB 统一内存）· Mac 常开 · 手机专用</p>
+<hr>
+<h2>0. 一句话方案</h2>
+<p><strong>签到路径学一次、固化成确定性配方，之后每天用 adb 回放（0 模型调用、秒级完成）。<br>
+收益按「积分 → 人民币」逐笔记账，Web 面板看状态、收益、连续天数、漏签损失。</strong></p>
+<hr>
+<h2>1. 技术选型结论</h2>
+<h3>1.1 执行层：uiautomator2 + adb（自建轻引擎）</h3>
+<p>不引入任何 AI 手机 Agent 产品，理由：</p>
+<table>
+<thead>
+<tr>
+<th>候选</th>
+<th>为什么不选</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>肉包 Roubao（2.4k★）/ ApkClaw（800★）/ Andclaw（514★）</td>
+<td>面向终端用户对话，拿不到结构化中间数据（动作序列、界面读数），接不上记账</td>
+</tr>
+<tr>
+<td>Open-AutoGLM（26.5k★）/ AutoGLM-GUI</td>
+<td>模型「限时免费」，可持续性不成立</td>
+</tr>
+<tr>
+<td>Midscene.js（15.4k★）</td>
+<td>见 1.2</td>
+</tr>
+<tr>
+<td>青龙面板 + 脚本库</td>
+<td>纯 Cookie 派；淘宝带设备签名，抓不到</td>
+</tr>
+</tbody>
+</table>
+<p><strong>uiautomator2 已在本机实测通过</strong>：点击（点「显示与亮度」成功跳 <code>.SubSettings</code>，界面确认变化）、长按 0.95s、滑动 1.57s、读屏、截图全部可用。</p>
+<h3>1.2 学习层：P0 由我识图，Midscene 列为预留</h3>
+<p><strong>关键事实：日常执行不需要 AI。</strong> 配方跑起来后每天 0 调用。AI 只在两个低频时刻出场——新活动接入、活动改版导致配方失效。</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>我直接识图（P0 采用）</th>
+<th>Midscene（预留）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>依赖</td>
+<td>已有（adb + 读屏 + 点击）</td>
+<td>Node + <code>@midscene/android</code> + 模型 API Key</td>
+</tr>
+<tr>
+<td>一次性成本</td>
+<td>3~5 张截图进上下文，几分钟</td>
+<td>装环境 20~30 分钟 + ¥0.03</td>
+</tr>
+<tr>
+<td>定位精度</td>
+<td>中（截图缩放到 540×1200，靠验证兜底）</td>
+<td>高（专用 grounding 模型）</td>
+</tr>
+<tr>
+<td>无人值守重学</td>
+<td>❌ 需要会话</td>
+<td>✅ 脚本可 cron 触发</td>
+</tr>
+<tr>
+<td>每步验证</td>
+<td>我做（点完看界面变没变）</td>
+<td>自带 <code>aiAssert</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>引入 Midscene 的触发条件</strong>（满足任一）：<br>
+1. 配方失效频率 ≥ 每月 2 次<br>
+2. 活动数量扩到 15 个以上<br>
+3. 要求完全脱离会话自动自愈</p>
+<p><strong>若将来引入，它的正确定位</strong>：不是日常执行引擎，而是「一次性教学工具」——跑一次产出带 <code>Locate center</code> 坐标的 HTML 报告，用 <code>report-tool --action split</code> 导出 <code>*.execution.json</code>，我们解析后固化成配方。<br>
+注意：它<strong>在 Android 上的元素定位缓存不生效</strong>（XPath 缓存仅 Web），所以不能靠它做日常零成本执行。</p>
+<h3>1.3 记账层：自建（唯一没有现成方案的部分）</h3>
+<p>调研结论：市面上（GitHub / Google / X / 应用商店）<strong>没有任何项目做「签到收益记账」</strong>。所有工具只记「成功/失败」日志，没有「积分 → 人民币、按账号/活动/时间汇总、有效期管理」。</p>
+<p>这层必须自己写，也是本方案的差异点。</p>
+<hr>
+<h2>2. 总体架构</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│ L1 学习层（一次性，低频）                                      │
+│   实现：我识图（P0）/ Midscene（预留）                         │
+│   输出：recipes/&lt;account&gt;_&lt;activity&gt;.json                     │
+│   时机：新活动接入、配方失效                                   │
+├──────────────────────────────────────────────────────────────┤
+│ L2 执行层（每日，0 模型调用）                                  │
+│   uiautomator2 + adb，按配方回放                               │
+│   每步验证：UI 文本 diff + 验证词                              │
+│   产出：ledger 记账 + evidence 截图                            │
+├──────────────────────────────────────────────────────────────┤
+│ L3 兜底层                                                     │
+│   a) 升回 L1 重学（限 1 次/天/活动）                           │
+│   b) 仍失败 → 推送截图，标 NEEDS_HUMAN                         │
+├──────────────────────────────────────────────────────────────┤
+│ 数据层：accounts / activities / recipes / ledger（纯文件）      │
+│ 展示层：Web 面板（读账本；只读 + 两个写操作）                   │
+└──────────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>为什么这么分</strong>：<br>
+- AI 的强项是「看得见就能点」，抗改版，但每步都推理，日常跑不划算<br>
+- 脚本的强项是「0 成本、快、可验证」，但路径写死，改版失效<br>
+- 组合起来：<strong>用 AI 的适应力生成脚本，用脚本的低成本日常执行</strong></p>
+<hr>
+<h2>3. 数据模型</h2>
+<p>四张表 + 一条账本。全文本、可 git 版本管理。</p>
+<h3>3.1 账号表 <code>accounts/accounts.yaml</code></h3>
+<pre><code class="language-yaml">accounts:
+  - id: tb_main
+    app: taobao
+    package: com.taobao.taobao
+    user_id: 0            # 0=主空间 / 999=应用双开
+    login: cookie         # cookie | sms | manual
+    enabled: true
+    note: 主账号
+
+  - id: tb_dual
+    app: taobao
+    package: com.taobao.taobao
+    user_id: 999          # 双开实例，包名相同
+    login: sms
+    enabled: false
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>全局唯一，账本主键</td>
+</tr>
+<tr>
+<td><code>app</code></td>
+<td>逻辑名，对应 <code>activities/&lt;app&gt;.yaml</code></td>
+</tr>
+<tr>
+<td><code>package</code></td>
+<td>Android 包名（主空间与双开<strong>相同</strong>）</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td><strong>双开实例的唯一区分依据</strong>：0 主空间 / 999 双开</td>
+</tr>
+<tr>
+<td><code>login</code></td>
+<td><code>cookie</code> 持久登录 / <code>sms</code> 需短信码 / <code>manual</code> 每次人工</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>是否参与调度</td>
+</tr>
+</tbody>
+</table>
+<p><strong>双开启动方式</strong>（已实测）：</p>
+<pre><code class="language-bash">adb shell am start --user 999 -n com.taobao.taobao/&lt;Activity&gt;
+</code></pre>
+<p>启动后前台为 <code>u999</code>，<code>am get-current-user</code> 仍为 0，u2 的 <code>dump_hierarchy</code> / <code>click</code> 正常。<br>
+注意：<code>d.app_start()</code> 只作用于当前用户，双开必须走 adb 形式。</p>
+<h3>3.2 活动表 <code>activities/&lt;app&gt;.yaml</code></h3>
+<pre><code class="language-yaml">app: taobao
+account: tb_main
+activities:
+  - id: tb_redpacket
+    name: 红包签到
+    entry: [首页, 红包签到]
+    verify_any: [已签到, 签到成功, 明日再来]
+    absent_ok: false
+    window: &quot;09:00-13:00&quot;
+    reward:
+      unit: 红包
+      amount: 0.5
+      cny_per_unit: 1.0
+    forbidden: [翻倍, 立即翻倍]
+    enabled: true
+    state: pending          # active | pending | dead
+
+  - id: tb_coin
+    name: 淘金币签到
+    entry: [领淘金币, 每日签到]
+    verify_any: [已签到, 领取成功]
+    window: &quot;09:00-21:00&quot;
+    reward:
+      unit: 淘金币
+      amount: 50
+      cny_per_unit: 0.01    # 100 淘金币 = ¥1
+    enabled: true
+    state: pending
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>verify_any</code></td>
+<td>成功判定词，任意命中即成功</td>
+</tr>
+<tr>
+<td><code>absent_ok</code></td>
+<td>入口消失是否算成功（有些 App 签完隐藏入口）</td>
+</tr>
+<tr>
+<td><code>window</code></td>
+<td>允许执行时段，实际执行在窗口内随机偏移</td>
+</tr>
+<tr>
+<td><code>cny_per_unit</code></td>
+<td><strong>积分→人民币唯一折算入口</strong>，改汇率只改这一行</td>
+</tr>
+<tr>
+<td><code>forbidden</code></td>
+<td>黑名单按钮，出现即中断（淘宝「翻倍」是价值陷阱：翻倍后红包只能指定专区用，实际价值大幅缩水）</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>active</code> 正常 / <code>pending</code> 待验证 / <code>dead</code> 活动结束</td>
+</tr>
+</tbody>
+</table>
+<h3>3.3 配方 <code>recipes/&lt;account&gt;_&lt;activity&gt;.json</code></h3>
+<p>L1 学完固化，L2 执行。<strong>混合定位</strong>：文本锚点 + 归一化坐标双保险。</p>
+<pre><code class="language-json">{
+  &quot;account&quot;: &quot;tb_main&quot;,
+  &quot;activity&quot;: &quot;tb_redpacket&quot;,
+  &quot;created&quot;: &quot;2026-10-29T23:40:00&quot;,
+  &quot;source&quot;: &quot;agent&quot;,
+  &quot;hits&quot;: 0,
+  &quot;fails&quot;: 0,
+  &quot;steps&quot;: [
+    {&quot;do&quot;: &quot;launch&quot;, &quot;package&quot;: &quot;com.taobao.taobao&quot;, &quot;user_id&quot;: 0, &quot;wait&quot;: 9},
+    {&quot;do&quot;: &quot;dismiss&quot;, &quot;until_stable&quot;: true},
+    {&quot;do&quot;: &quot;tap&quot;, &quot;text&quot;: &quot;红包签到&quot;, &quot;xy&quot;: [0.42, 0.31], &quot;after&quot;: 2.5},
+    {&quot;do&quot;: &quot;forbid&quot;, &quot;any&quot;: [&quot;翻倍&quot;, &quot;立即翻倍&quot;]},
+    {&quot;do&quot;: &quot;verify&quot;, &quot;any&quot;: [&quot;已签到&quot;, &quot;签到成功&quot;, &quot;明日再来&quot;]},
+    {&quot;do&quot;: &quot;read&quot;, &quot;field&quot;: &quot;balance&quot;, &quot;regex&quot;: &quot;(\\d+)\\s*淘金币&quot;}
+  ]
+}
+</code></pre>
+<p><strong>step 类型全表</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>do</code></th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launch</code></td>
+<td><code>package</code> / <code>user_id</code> / <code>wait</code></td>
+<td>启动（双开走 <code>am start --user</code>）</td>
+</tr>
+<tr>
+<td><code>tap</code></td>
+<td><code>text</code> / <code>xy</code>(归一化) / <code>exact</code> / <code>timeout</code> / <code>after</code></td>
+<td>先按文本找，找不到用坐标</td>
+</tr>
+<tr>
+<td><code>long_press</code></td>
+<td><code>text</code> 或 <code>xy</code>，<code>duration</code></td>
+<td>长按（实测 0.95s）</td>
+</tr>
+<tr>
+<td><code>swipe</code></td>
+<td><code>from</code>/<code>to</code>（归一化 <code>[x,y]</code>），<code>duration</code></td>
+<td>滑动（实测 1.57s）</td>
+</tr>
+<tr>
+<td><code>watch_video</code></td>
+<td><code>max_sec</code>，<code>skip_after</code></td>
+<td>等视频 + 轮询跳过按钮</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td><code>text</code></td>
+<td>输入（中文走 yadb）</td>
+</tr>
+<tr>
+<td><code>back</code> / <code>home</code></td>
+<td>—</td>
+<td>导航键</td>
+</tr>
+<tr>
+<td><code>dismiss</code></td>
+<td><code>until_stable</code></td>
+<td>跑 watcher 清弹窗（0 调用）</td>
+</tr>
+<tr>
+<td><code>forbid</code></td>
+<td><code>any</code></td>
+<td>命中黑名单立刻中断报错</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td><code>any</code> / <code>absent_ok</code></td>
+<td>成功判定</td>
+</tr>
+<tr>
+<td><code>read</code></td>
+<td><code>field</code> / <code>regex</code></td>
+<td>读界面数值（余额/积分），用于记账</td>
+</tr>
+</tbody>
+</table>
+<p><strong>坐标一律归一化（0~1）</strong>，不写像素 —— 换机型、换分辨率配方仍有效。</p>
+<p><strong>混合定位执行顺序</strong>：文本找 → 坐标点 → 两者都失败记 <code>NOT_FOUND</code> 并触发重学。<br>
+这样比纯坐标或纯文本都稳：文案变了但位置没变能中，位置挪了但文案没变也能中。</p>
+<h3>3.4 账本 <code>ledger/YYYY-MM-DD.jsonl</code></h3>
+<pre><code class="language-json">{&quot;ts&quot;:&quot;2026-10-29T09:12:03&quot;,&quot;account&quot;:&quot;tb_main&quot;,&quot;activity&quot;:&quot;tb_redpacket&quot;,
+ &quot;status&quot;:&quot;OK&quot;,&quot;layer&quot;:&quot;L2&quot;,
+ &quot;reward&quot;:{&quot;unit&quot;:&quot;红包&quot;,&quot;amount&quot;:0.5},
+ &quot;face_value_cny&quot;:0.5,&quot;usable_cny&quot;:0.5,&quot;cash_cny&quot;:0.0,
+ &quot;expires_at&quot;:&quot;2026-11-13&quot;,
+ &quot;balance_before&quot;:1234,&quot;balance_after&quot;:1284,
+ &quot;ms&quot;:3870,&quot;evidence&quot;:&quot;evidence/2026-10-29-tb_main-tb_redpacket.png&quot;}
+</code></pre>
+<p><strong>三个金额字段必须分开</strong></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>face_value_cny</code></td>
+<td>账面价值</td>
+<td>按官方汇率折算的名义金额</td>
+</tr>
+<tr>
+<td><code>usable_cny</code></td>
+<td>可用价值</td>
+<td>受抵扣上限约束（京豆单笔最高抵 50%）</td>
+</tr>
+<tr>
+<td><code>cash_cny</code></td>
+<td>真现金</td>
+<td>签到场景基本为 0</td>
+</tr>
+</tbody>
+</table>
+<p>签到收益几乎全是<strong>账面价值、不可提现</strong>。混成一个数字会自欺。</p>
+<h3>3.5 状态机</h3>
+<table>
+<thead>
+<tr>
+<th>status</th>
+<th>含义</th>
+<th>计收益</th>
+<th>后续</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OK</code></td>
+<td>成功 + 验证通过</td>
+<td>✅</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>ALREADY</code></td>
+<td>今日已签</td>
+<td>❌</td>
+<td>结束</td>
+</tr>
+<tr>
+<td><code>NO_EFFECT</code></td>
+<td>点了无变化</td>
+<td>❌</td>
+<td>累计 3 次 → 重学</td>
+</tr>
+<tr>
+<td><code>NOT_FOUND</code></td>
+<td>找不到入口</td>
+<td>❌</td>
+<td>重学</td>
+</tr>
+<tr>
+<td><code>NEEDS_LOGIN</code></td>
+<td>掉登录 / 被挤下线</td>
+<td>❌</td>
+<td>推送，不重试</td>
+</tr>
+<tr>
+<td><code>NEEDS_HUMAN</code></td>
+<td>滑块/验证码/权限弹窗</td>
+<td>❌</td>
+<td>推送截图</td>
+</tr>
+<tr>
+<td><code>LAUNCH_FAILED</code></td>
+<td>App 没起来</td>
+<td>❌</td>
+<td>重试 1 次</td>
+</tr>
+<tr>
+<td><code>DEAD</code></td>
+<td>活动结束</td>
+<td>❌</td>
+<td>自动停跑</td>
+</tr>
+<tr>
+<td><code>FORBIDDEN_HIT</code></td>
+<td>命中黑名单</td>
+<td>❌</td>
+<td>中断报错</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. 每日运行流程</h2>
+<pre><code>cron 触发（Hermes cron 或 launchd）
+│
+├─ 0. 环境自检
+│     adb 连接 / 屏幕唤醒 / 免锁屏 / 电量
+│     失败 → 推送「设备离线」
+│
+├─ 1. 读 tasks，筛出当天在时间窗内的活动
+│
+├─ 2. 登录体检（L0）
+│     掉登录（*Login* Activity）→ NEEDS_LOGIN
+│     被挤下线（信息流在 + 模态框）→ NEEDS_LOGIN
+│     → 汇总一次推送，不逐个打扰
+│
+├─ 3. 串行执行（一台机同时只能操作一个 App）
+│     for each activity:
+│       ├─ L2 跑配方
+│       │    每步验证 → 全通过 → 读余额 → 落账 OK
+│       │    任一步失败 → NO_EFFECT / NOT_FOUND
+│       ├─ 失败且今日未重学 → L1 重学
+│       │    成功 → 覆盖配方 → 重跑 L2 验证 → 落账
+│       │    失败 → NEEDS_HUMAN + 截图
+│       └─ 随机 sleep 2~8s
+│
+├─ 4. 汇总：成功 X / 已签 Y / 失败 Z / 需登录 W / 今日账面 ¥N
+│     → 飞书一条消息
+│
+└─ 5. 落盘：ledger + evidence + recipes
+</code></pre>
+<p><strong>时间窗随机化</strong>：避开签到入口的时段限制；避免「所有 App 同一分钟集中点击」的机器特征。</p>
+<hr>
+<h2>5. 成本模型</h2>
+<h3>5.1 L2 日常执行：0</h3>
+<p>实测数据（淘宝首页 385 节点）：</p>
+<table>
+<thead>
+<tr>
+<th>取数方式</th>
+<th>数据量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全量 XML（<strong>不传模型</strong>）</td>
+<td>182,234 字符</td>
+</tr>
+<tr>
+<td>只取文本列表</td>
+<td>239 字符</td>
+</tr>
+<tr>
+<td><code>exists</code> 布尔判定</td>
+<td>5 字符</td>
+</tr>
+<tr>
+<td>两次 UI 文本 diff</td>
+<td>35 字符</td>
+</tr>
+</tbody>
+</table>
+<p><strong>日常执行全程本地处理，不产生任何模型调用。</strong></p>
+<h3>5.2 L1 学习</h3>
+<ul>
+<li>P0（我识图）：0（算在会话成本里，且是低频一次性）</li>
+<li>若改用 Midscene：一次签到约 15 步 × 2K tokens ≈ 30K tokens ≈ <strong>¥0.03/次</strong></li>
+</ul>
+<h3>5.3 年度成本</h3>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2 日常 8 活动 × 365 天</td>
+<td><strong>¥0</strong></td>
+</tr>
+<tr>
+<td>L1 学习（P0 我识图）</td>
+<td>¥0</td>
+</tr>
+<tr>
+<td>若引入 Midscene（首次 8 次 + 改版 + 兜底 ≈ 30 次/年）</td>
+<td>≈ <strong>¥1</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：不需要本地模型部署。</strong> 为省 ¥1 占用 6GB 磁盘、拖慢推理，不划算。</p>
+<hr>
+<h2>6. 失败处理矩阵</h2>
+<table>
+<thead>
+<tr>
+<th>现象</th>
+<th>检测方式</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>屏幕黑着</td>
+<td><code>d.info["screenOn"] == False</code></td>
+<td><code>svc power stayon true</code> + <code>KEYCODE_WAKEUP</code></td>
+</tr>
+<tr>
+<td>dump 只有 ~20 节点</td>
+<td>节点数 &lt; 30 且包名 systemui</td>
+<td>判熄屏/通知栏遮挡，处理后再读</td>
+</tr>
+<tr>
+<td>App 没起来</td>
+<td>连续两次采样包名 ≠ 目标</td>
+<td><code>app_stop</code> 后重试，最多 3 次</td>
+</tr>
+<tr>
+<td>selector 匹配不到但 XML 有</td>
+<td><code>exists</code> 假 + 文本在 XML 中</td>
+<td>解析 bounds → 中心 <code>click(x,y)</code></td>
+</tr>
+<tr>
+<td>点了没反应</td>
+<td>前后 UI 文本集合完全相同</td>
+<td><code>NO_EFFECT</code>，重试 1 次后转 L1</td>
+</tr>
+<tr>
+<td>弹窗挡路</td>
+<td>命中噪音词</td>
+<td>设备端 <code>watcher</code> 自动点（0 调用）</td>
+</tr>
+<tr>
+<td>掉登录</td>
+<td>Activity 含 <code>Login</code> / 「验证码登录」</td>
+<td><code>NEEDS_LOGIN</code>，推送，不重试</td>
+</tr>
+<tr>
+<td><strong>被挤下线</strong></td>
+<td>信息流在 + 「账号下线通知」模态框</td>
+<td><code>NEEDS_LOGIN</code>；<strong>必须先识别</strong>，否则后续点击全落弹窗、会误报成功</td>
+</tr>
+<tr>
+<td>滑块验证码</td>
+<td>「请拖动滑块」</td>
+<td><code>NEEDS_HUMAN</code>，不硬过（硬过加重风控）</td>
+</tr>
+<tr>
+<td>命中「翻倍」</td>
+<td>黑名单词出现</td>
+<td><code>FORBIDDEN_HIT</code>，中断</td>
+</tr>
+<tr>
+<td>活动结束</td>
+<td>连续 3 天 <code>NOT_FOUND</code> 且重学也找不到</td>
+<td>标 <code>DEAD</code> 停跑</td>
+</tr>
+</tbody>
+</table>
+<p><strong>误报比失败更危险</strong> —— 失败会重试，误报没人管。所以每步必须验证。</p>
+<hr>
+<h2>7. Web 面板</h2>
+<p>Mac 本地，读 <code>ledger/</code> <code>accounts/</code> <code>activities/</code>，不写业务数据。<br>
+技术：单进程（FastAPI 或 Node）+ 静态前端，<code>localhost:8080</code>，局域网可访问。</p>
+<h3>① 今日</h3>
+<table>
+<thead>
+<tr>
+<th>区块</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>概览卡</td>
+<td>成功 / 已签 / 失败 / 需处理 / 今日账面 ¥</td>
+</tr>
+<tr>
+<td>活动列表</td>
+<td>账号 · 活动 · 状态 · 时间 · 账面价值 · 截图缩略图</td>
+</tr>
+<tr>
+<td>待处理</td>
+<td><code>NEEDS_LOGIN</code> / <code>NEEDS_HUMAN</code>，点开看全屏截图</td>
+</tr>
+</tbody>
+</table>
+<h3>② 收益</h3>
+<table>
+<thead>
+<tr>
+<th>区块</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>累计</td>
+<td>账面 / 可用 / 现金（三个数分开，标注「账面不可提现」）</td>
+</tr>
+<tr>
+<td>趋势</td>
+<td>日 / 周 / 月折线</td>
+</tr>
+<tr>
+<td>分账号</td>
+<td>各账号贡献占比</td>
+</tr>
+<tr>
+<td>分币种</td>
+<td>淘金币 / 京豆 / 红包 / 积分，数量 + 折算</td>
+</tr>
+</tbody>
+</table>
+<h3>③ 连续与漏签</h3>
+<table>
+<thead>
+<tr>
+<th>区块</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连续天数</td>
+<td>每活动当前连续 / 历史最长</td>
+</tr>
+<tr>
+<td>漏签</td>
+<td>最近 30 天漏签日期</td>
+</tr>
+<tr>
+<td><strong>漏签损失</strong></td>
+<td>按 <code>amount × cny_per_unit</code> 估算「因为没签少赚多少」</td>
+</tr>
+<tr>
+<td><strong>即将过期</strong></td>
+<td>按 <code>expires_at</code> 排序，30 天内到期</td>
+</tr>
+</tbody>
+</table>
+<p>淘金币宝箱有容量上限（满了不累积）、京豆 2026 新规有效期最长 180 天（过期作废）——这两项让「漏签损失」和「即将过期」成为必需指标，不是可选项。</p>
+<h3>④ 账号与配方</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>账号列表</td>
+<td>登录状态、上次成功时间、<code>user_id</code></td>
+</tr>
+<tr>
+<td>配方健康度</td>
+<td><code>hits</code> / <code>fails</code> / 上次重学时间</td>
+</tr>
+<tr>
+<td>手动触发</td>
+<td>单活动立即跑一次（调试用）</td>
+</tr>
+<tr>
+<td>手动补录</td>
+<td>输入某活动今日实际收益（有些 App 读不到余额）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>只读 + 两个写操作</strong>。配方不做在线编辑——走文件，便于版本管理。</p>
+<hr>
+<h2>8. 部署与调度</h2>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>位置</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行器</td>
+<td>Mac</td>
+<td>必须与手机 adb 相连</td>
+</tr>
+<tr>
+<td>面板</td>
+<td>Mac</td>
+<td><code>localhost:8080</code></td>
+</tr>
+<tr>
+<td>调度</td>
+<td>Mac cron / Hermes cron</td>
+<td>Mac 常开</td>
+</tr>
+<tr>
+<td>数据</td>
+<td><code>~/Project/android-checkin/</code></td>
+<td>accounts / activities / recipes / ledger / evidence</td>
+</tr>
+<tr>
+<td>存储</td>
+<td>纯文件 JSONL，无数据库</td>
+<td>便于 git、人读、迁移</td>
+</tr>
+<tr>
+<td>通知</td>
+<td>飞书</td>
+<td>每日汇总 + 待处理项</td>
+</tr>
+</tbody>
+</table>
+<p><strong>设备侧一次性设置</strong></p>
+<ul>
+<li>开发者选项 → USB 调试（安全设置）✅ 已开</li>
+<li>开发者选项 → USB 安装 ✅ 已开</li>
+<li>开发者选项 → 充电时保持唤醒</li>
+<li>关闭锁屏密码 / 开启「直接进入系统」</li>
+<li>充电上限 80%（长期插电防鼓包）</li>
+</ul>
+<hr>
+<h2>9. 开发计划</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>交付</th>
+<th>验收标准</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P0 打通</strong></td>
+<td>淘宝红包签到：学 → 固化 → 跑 → 记账 → 面板显示</td>
+<td><strong>连续 3 天自动签成功</strong>，账本 3 条 <code>OK</code>，面板看到收益</td>
+</tr>
+<tr>
+<td><strong>P1 稳健</strong></td>
+<td>失败矩阵全实现 + 兜底重学 + 飞书推送</td>
+<td>故意改坏配方能自动重学恢复；熄屏/断网/掉登录都正确报状态</td>
+</tr>
+<tr>
+<td><strong>P2 扩展</strong></td>
+<td>淘金币 + 京东 + 美团；多账号双开</td>
+<td>5~8 活动稳跑一周，误报率 0</td>
+</tr>
+<tr>
+<td><strong>P3 面板</strong></td>
+<td>收益趋势、连续天数、漏签损失、配方健康度</td>
+<td>数据与 <code>ledger/</code> 对得上</td>
+</tr>
+</tbody>
+</table>
+<p><strong>P0 是唯一必须一次做对的</strong> —— 它验证「学一次 → 每天跑」主链路。链路通了，后面都是加活动。</p>
+<hr>
+<h2>10. 风险与对策</h2>
+<table>
+<thead>
+<tr>
+<th>风险</th>
+<th>影响</th>
+<th>对策</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平台风控升级</td>
+<td>点击无效 / 奖励缩水 / 限权</td>
+<td>时间窗随机化、每日只跑一次、不硬过滑块、控制活动数（5~8 个）</td>
+</tr>
+<tr>
+<td>账号被封</td>
+<td>收益归零</td>
+<td>优先小号 / 双开号；核心账号不多设备并发</td>
+</tr>
+<tr>
+<td>活动频繁改版</td>
+<td>配方失效</td>
+<td>自动重学；<code>fails</code> 计数告警；接受「每月几次重学」是常态</td>
+</tr>
+<tr>
+<td>手机长期插电</td>
+<td>电池鼓包</td>
+<td>充电上限 80%、通风处</td>
+</tr>
+<tr>
+<td>手机离线/断连</td>
+<td>当日全失败</td>
+<td>环境自检 + 离线告警</td>
+</tr>
+<tr>
+<td>淘宝检测自动化</td>
+<td>奖励降低</td>
+<td>不高频、不批量、只做单账号日常签到</td>
+</tr>
+<tr>
+<td>合规</td>
+<td>违反用户协议</td>
+<td>仅自用；不对外提供服务；不集成进任何产品</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>11. 方案演进（勘误）</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>结论</th>
+<th>为什么改</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v0</td>
+<td>自建 uiautomator2 + 自写 LLM 决策</td>
+<td>重复造轮子</td>
+</tr>
+<tr>
+<td>v1</td>
+<td>用 AutoGLM-GUI 做执行</td>
+<td>模型限时免费，不可持续</td>
+</tr>
+<tr>
+<td>v2</td>
+<td>本地 VLM + Midscene 缓存</td>
+<td>Android 元素定位缓存不生效；本地模型省不到钱</td>
+</tr>
+<tr>
+<td>v1.0</td>
+<td>Midscene 只做学习，日常跑配方</td>
+<td>依赖多一层，而学习是低频事件</td>
+</tr>
+<tr>
+<td><strong>v1.1（本版）</strong></td>
+<td><strong>我识图学习 + 配方执行，Midscene 预留</strong></td>
+<td>日常不需要 AI，学习低频，不必引入额外依赖</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>12. 待确认（开工前）</h2>
+<ol>
+<li><strong>P0 只做「淘宝红包签到」一个活动</strong>，跑通全链路</li>
+<li><strong>通知走飞书</strong>，每日汇总一条</li>
+<li><strong>面板先做「今日 + 收益」两页</strong>，连续天数与漏签损失放 P3</li>
+<li><strong>P0 只跑主空间淘宝</strong>（已登录），双开放 P2</li>
+</ol>
+<hr>
+<h2>附：实测证据汇总</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>adb 连接</td>
+<td>USB + 无线（<code>192.168.31.10:5555</code>）均可用</td>
+</tr>
+<tr>
+<td>点击</td>
+<td>点「显示与亮度」成功跳 <code>.SubSettings</code>，界面变化确认</td>
+</tr>
+<tr>
+<td>长按 / 滑动 / 拖拽</td>
+<td>0.95s / 1.57s / 可用；<code>gesture</code>、<code>pinch_*</code> 不存在</td>
+</tr>
+<tr>
+<td>读屏成本</td>
+<td>全量 XML 182,234 字符 / 文本 239 字符 / <code>exists</code> 5 字符 / diff 35 字符</td>
+</tr>
+<tr>
+<td>截图成本</td>
+<td>全屏 PNG 1.9 MB → 800px JPEG 100 KB</td>
+</tr>
+<tr>
+<td>watcher</td>
+<td>可用，设备端自动清弹窗，0 调用</td>
+</tr>
+<tr>
+<td>应用双开</td>
+<td><code>am start --user 999</code> 可启动并操控；<code>am switch-user</code> 被禁</td>
+</tr>
+<tr>
+<td>登录态</td>
+<td>实测 6 个 App 中 4 个掉线（美团 / 拼多多 / 小红书 / 网易云）</td>
+</tr>
+<tr>
+<td>系统设置路径</td>
+<td>设置 → 下滑 → 应用设置 → 应用双开（搜索框不可用，须走列表）</td>
+</tr>
+<tr>
+<td>手势限制</td>
+<td><code>gesture</code> / <code>pinch_in</code> / <code>pinch_out</code> 不存在，多点需 shell 或 minitouch</td>
+</tr>
+</tbody>
+</table></body></html>

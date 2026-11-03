@@ -1,0 +1,10 @@
+{
+  "name": "checkin",
+  "version": "0.1.0",
+  "author": {
+    "name": "checkin-platform"
+  },
+  "description": "Evidence-based check-in activity execution and scoped draft review.",
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

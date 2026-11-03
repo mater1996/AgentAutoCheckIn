@@ -1,0 +1,9 @@
+app: meituan
+name: 美团
+package: com.sankuai.meituan
+launch_wait: 8.0
+window: 10:00-14:00
+verify_any:
+- 已签到
+- 已领取
+- 今日已签

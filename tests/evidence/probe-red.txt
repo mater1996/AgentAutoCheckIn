@@ -1,0 +1,95 @@
+✖ missing task counts remain unknown instead of being inferred from reward progress (0.900166ms)
+✖ probes reject malformed current counts and expose explicit validity (0.153ms)
+✖ invalid observations retry even when the progress denominator is positive (0.078959ms)
+✖ strict counter parsers never salvage negative, fractional, or unsafe readings (0.168208ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 0
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 60.313708
+
+✖ failing tests:
+
+test at tests/probe.test.ts:1:587
+✖ missing task counts remain unknown instead of being inferred from reward progress (0.900166ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/probe.test.ts:16:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/probe.test.ts:1:916
+✖ probes reject malformed current counts and expose explicit validity (0.153ms)
+  AssertionError [ERR_ASSERTION]: 21/20
+  + actual - expected
+  
+  + undefined
+  - false
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/probe.test.ts:34:12)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/probe.test.ts:1:1671
+✖ invalid observations retry even when the progress denominator is positive (0.078959ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/probe.test.ts:50:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/probe.test.ts:1:2013
+✖ strict counter parsers never salvage negative, fractional, or unsafe readings (0.168208ms)
+  AssertionError [ERR_ASSERTION]: -1/20
+  + actual - expected
+  
+  + {
+  +   done: 1,
+  +   total: 20
+  + }
+  - null
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/probe.test.ts:56:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: { done: 1, total: 20 },
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit_code=1

@@ -1,0 +1,24 @@
+STAGE collect_list
+STAGE select_task
+STAGE open_task
+(node:90979) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE collect_list
+STAGE select_task
+STAGE open_task
+✔ real current inspector → runtime → engine: one ordinary dwell task reaches focused stable settlement (298.185875ms)
+STAGE task_receipt
+STAGE open_task
+STAGE settle
+✔ wrong synthetic requirement fails the real checker without completion, wait authority or another entry (164.328833ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 547.351542

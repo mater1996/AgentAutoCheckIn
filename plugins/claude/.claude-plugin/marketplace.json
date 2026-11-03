@@ -1,0 +1,14 @@
+{
+  "name": "checkin-local",
+  "owner": {
+    "name": "checkin-platform"
+  },
+  "plugins": [
+    {
+      "name": "checkin",
+      "source": "./checkin",
+      "description": "Evidence-based check-in activity execution and scoped draft review.",
+      "version": "0.1.0"
+    }
+  ]
+}

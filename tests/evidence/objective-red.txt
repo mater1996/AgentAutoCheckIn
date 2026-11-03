@@ -1,0 +1,75 @@
+✖ unknown or malformed observations cannot imply completion or no remaining tasks (0.79175ms)
+✖ pure observation validator is usable by callers with untrusted input (0.17525ms)
+✖ reward threshold does not count as exhausted task quota (0.068834ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61.725209
+
+✖ failing tests:
+
+test at tests/objective.test.ts:1:238
+✖ unknown or malformed observations cannot imply completion or no remaining tasks (0.79175ms)
+  AssertionError [ERR_ASSERTION]: {"done":0,"total":0,"tasksLeft":-1}
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/objective.test.ts:24:12)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.start (node:internal/test_runner/test:1257:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '已无剩余任务（进度 0/0）',
+    expected: /观测.*无效|探测失败/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/objective.test.ts:1:956
+✖ pure observation validator is usable by callers with untrusted input (0.17525ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/objective.test.ts:33:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/objective.test.ts:1:1408
+✖ reward threshold does not count as exhausted task quota (0.068834ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  false !== true
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/objective.test.ts:44:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit_code=1

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  面板常驻服务。加载方式（必须在网关外的普通终端执行，
+  Hermes 网关环境禁止 launchctl bootstrap）：
+
+    cp ~/Project/checkin-platform/scripts/com.checkin.panel.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.checkin.panel.plist
+    launchctl kickstart -k gui/$(id -u)/com.checkin.panel
+
+  卸载：
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.checkin.panel.plist
+
+  注意：launchd 默认 PATH 不含 /opt/homebrew/bin，adopt PATH 必须显式声明，
+  否则 npx / adb 都找不到。
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.checkin.panel</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/npx</string>
+    <string>tsx</string>
+    <string>server/panel.ts</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/mater/Project/checkin-platform</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>PANEL_PORT</key>
+    <string>8787</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/mater/Project/checkin-platform/logs/panel.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/mater/Project/checkin-platform/logs/panel.err.log</string>
+</dict>
+</plist>

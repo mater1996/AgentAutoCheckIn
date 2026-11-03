@@ -1,0 +1,2404 @@
+{
+  "schemaVersion": 1,
+  "executionPolicy": "development-unbounded-v1",
+  "scope": {
+    "appId": "taobao",
+    "accountId": "tb_main",
+    "activityId": "tb_coin",
+    "userId": 0
+  },
+  "package": "com.taobao.taobao",
+  "activityName": "淘金币",
+  "panelMarker": "赚金币抵钱",
+  "assetId": "taobao_coins",
+  "planFile": "data/evidence/formal-interactions-20261103/plan.json",
+  "knowledgeIndex": "data/task-records-v2/index.json",
+  "evidenceRoot": "evidence",
+  "model": {
+    "baseUrl": "http://127.0.0.1:3425/v1",
+    "name": "codex/gpt-6.1-terra",
+    "apiKeyEnv": "CHECKIN_VISION_API_KEY",
+    "timeoutMs": 45000
+  },
+  "limits": {
+    "maxTasks": 1,
+    "sessionMs": 600000,
+    "stageMs": 180000,
+    "agentCalls": 30,
+    "stageActions": 8,
+    "inventoryPages": 7,
+    "maxReturns": 3
+  },
+  "taskPolicy": "从当前列表原图选择第一项符合范围且本批未消费的任务，同时返回任务真实要求、当前次数、执行流程/条件计划和当前按钮；代码执行，已学步骤优先，未覆盖状态交AI。无需每项前全量采集，不使用标题关键词猜要求。找不到候选先滚动，确认从顶部到底部无候选才结束。保留旧attempt与用户skip。",
+  "constraints": [
+    "不购物、不加购、不支付、不充值、不提现、不兑换、不填手机号或地址",
+    "不切账号、不授权第三方登录、不处理密码验证码或人机验证",
+    "本批已尝试的任务不重做；不自动创建新批次或重试旧失败",
+    "返回只导航不领取其他任务奖励；任务回执和正确资产页核账分开",
+    "从顶部按当前列表顺序逐屏选择下一项，安全返回后刷新当前页面继续其他合格项",
+    "不启用调度；整轮结束返回系统桌面并息屏，读回验证",
+    "签到期间不修改插件、Skill、脚本、配置或长期经验；失败流程与优化建议结束后交调用方"
+  ],
+  "stages": {
+    "open_app": {
+      "goal": "打开目标应用并确认目标包与Android用户空间。进入活动导航前必须从截图确认实际页面，不把前台包当首页。",
+      "checkpoint": "target_app_foreground"
+    },
+    "enter_activity": {
+      "goal": "到达目标淘金币活动；若已在其任务列表，视为已满足并保留当前页面。只导航，不做任务不领取。",
+      "checkpoint": "activity_visible"
+    },
+    "open_list": {
+      "goal": "展开目标活动的赚金币任务列表，明确看到实际任务行、次数、操作按钮；活动首页不算列表。",
+      "checkpoint": "task_list_visible"
+    },
+    "open_task": {
+      "goal": "只打开当前已选任务一次，显式interactionRoutes授权搜索浏览或答题，按当前原图确认实际要求",
+      "checkpoint": "task_destination_visible"
+    },
+    "task_receipt": {
+      "goal": "按显式路由完成一次站内推荐搜索并连续浏览10秒或当前问题答题；由AI读原图判断，不硬编码答案/推荐词，保存独立回执",
+      "checkpoint": "task_receipt_captured",
+      "continuousScroll": {
+        "maxSwipes": 30,
+        "maxMs": 35000,
+        "requiredMs": 25000
+      },
+      "revalidateBeforeScroll": true
+    },
+    "return_list": {
+      "goal": "只返回本次活动任务列表，每次动作后观察；遇挽留弹窗由Agent依据当前截图建议，不点击其他任务或奖励。",
+      "checkpoint": "task_list_returned"
+    }
+  },
+  "selectionAllowNew": false,
+  "selectionPolicy": "batch-attempts-v1",
+  "taskCompletionPolicy": "current-keywords-v1",
+  "learnedBrowse": {
+    "enabled": true,
+    "version": "continuous-browse-candidate-v1",
+    "sourceRunId": 153,
+    "autoContract": true
+  },
+  "scriptValidationMode": false,
+  "immersiveBrowse": {
+    "enabled": true,
+    "version": "immersive-browse-candidate-v2",
+    "sourceRunId": 145,
+    "task": {
+      "name": "好物沉浸看",
+      "instruction": "浏览"
+    },
+    "observationBudgetMs": 20000,
+    "allowedRewardCoins": [
+      20,
+      35,
+      50
+    ],
+    "rewardTransitions": [
+      {
+        "version": "immersive-reward-transition-v1:4275d19b3a843a6eae11cb9bc861a6fcc2c05db6937f50e3e22c9620600ebe3d",
+        "sourceRunId": 184,
+        "browseRewardCoins": 20,
+        "receiptRewardCoins": 35,
+        "files": [
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/result.json",
+            "sha256": "da1f93d09ea85dbeaf65ee3651b47664627aeeda2102a0e1787bf6e960084e5f"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/stages.json",
+            "sha256": "80cd6045d022bf79c305199e013b9b9401262c06096156fd298b2447da88964c"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/3a3d237c-00d4-4502-82db-2e85d084e370.png",
+            "sha256": "6813853f62474f567a899c1c48b96b1e23656660dc6c6f76f34484a0703f375b"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/3a3d237c-00d4-4502-82db-2e85d084e370.json",
+            "sha256": "bebc99932719346815e1e9060c4c4f17e2c048acc8fa4326fa38603dc912bd06"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/33f7f285-7248-432d-8040-13aded9e3ebf.png",
+            "sha256": "817a642d8e6c2561196845120ce12dd0fc546c95ff88856a19d74e2fbd52f4fd"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T10-35-22-744Z/33f7f285-7248-432d-8040-13aded9e3ebf.json",
+            "sha256": "4a321baf8f1056eefd45e45fcf09b8db8ed2ad4c659e9bfe78ec6277ab9dba16"
+          }
+        ]
+      }
+    ],
+    "ocrQuality": true
+  },
+  "balanceComponent": false,
+  "localLaunch": true,
+  "localActivityNavigation": true,
+  "entryRecovery": true,
+  "aiPanelReader": true,
+  "dwellBrowse": {
+    "version": "dwell-browse-candidate-v1",
+    "contracts": [
+      {
+        "task": {
+          "name": "去芭芭农场逛一逛",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:3a6e878b622de22e2759fd520a903b2098d19dbfca03294f9a94e46f2cfcdf6a",
+        "sourceRunIds": [
+          160
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-39-51-677Z/result.json",
+          "resultSha256": "bd3fae5625fe493d49e83f7ba0d09b30309c0fae6d2aa7deccdcafb4f0df7a41",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/accounts/taobao/tb_main/tb_coin/sessions/stagedsession_0e251e6c9cca0304af950a2f009e0132fda9eb62694efcc084dc44a067cfb065.json",
+          "sessionSha256": "efa6884f1dddca61893c9b309efec1e7ac95c3bd72e2c05e96fdaf74672b6ded"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              916,
+              1842,
+              1014,
+              1873
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1877,
+              1007,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-39-51-677Z/6125a14b-0010-4806-8b89-6d617998b729.png",
+            "sha256": "8ba0c5ed4eaa9a7df826ae1c092072801e256d4d130a6475643a36ff2a08be6d",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-39-51-677Z/6125a14b-0010-4806-8b89-6d617998b729.json",
+            "ocrSha256": "2a86bc18c48d2328180c1d7245cf5d5a873a8d4fd7c7d3ac3d06fb695884dda2",
+            "frameId": "6125a14b-0010-4806-8b89-6d617998b729"
+          },
+          "identity": [
+            {
+              "pattern": "^施肥$",
+              "bounds": [
+                478,
+                1801,
+                602,
+                1869
+              ]
+            },
+            {
+              "pattern": "^肥料0$",
+              "bounds": [
+                491,
+                1870,
+                596,
+                1912
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                916,
+                1842,
+                1014,
+                1873
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1877,
+                1007,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-39-51-677Z/3bcffe44-1af7-4919-8606-4f586fb3cab9.png",
+            "sha256": "34dd711c08b82534c6376f071307ecc96ca9c96c6452c8b9f2fc58d1fe2a54a3",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-39-51-677Z/3bcffe44-1af7-4919-8606-4f586fb3cab9.json",
+            "ocrSha256": "83ea51a1225c772a01f5f26ec0084099ec8acb53a137191247c0be9ccd43974f",
+            "frameId": "3bcffe44-1af7-4919-8606-4f586fb3cab9"
+          },
+          "identity": [
+            {
+              "pattern": "^芭芭农场$",
+              "bounds": [
+                132,
+                153,
+                348,
+                213
+              ]
+            },
+            {
+              "pattern": "^好物上新$",
+              "bounds": [
+                34,
+                246,
+                335,
+                326
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^\\+30$",
+              "bounds": [
+                934,
+                1692,
+                1000,
+                1723
+              ]
+            },
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                902,
+                1841,
+                1035,
+                1874
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1877,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              896,
+              1682,
+              1055,
+              1734
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ],
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ]
+          ],
+          "quote": "+30 任务已完成 继续逛逛吧"
+        }
+      },
+      {
+        "task": {
+          "name": "去省钱卡领红包",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:807ce4a04bebfe2eac4f580076341cfca281f8b75a1c117f7c260ed264133f66",
+        "sourceRunIds": [
+          161
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-49-31-673Z/result.json",
+          "resultSha256": "6a6c8899fa4164bded63ba67bf90bb45eb517c9a604761f224a0ac83f548e8ed",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/accounts/taobao/tb_main/tb_coin/sessions/stagedsession_14dc3edef6a60630f8d57752e75a3cdc10e60e4370b99adfd4270c92b612ae26.json",
+          "sessionSha256": "f078967ea02738b7b2dd87922729f78c4565120180887548802d1ba0b376882a"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              920,
+              1842,
+              1017,
+              1873
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1877,
+              1010,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-49-31-673Z/f84a3cbf-4adb-4267-b18f-96f7de641ee9.png",
+            "sha256": "cae84b42050b822fa9077246921684c3284e9ffa2c99f8752235e7cd4f53134e",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-49-31-673Z/f84a3cbf-4adb-4267-b18f-96f7de641ee9.json",
+            "ocrSha256": "c7a3c562985ebea30303bd3f1fd3980a7bd61e45d3c3e2fc94ddda2665ef85d0",
+            "frameId": "f84a3cbf-4adb-4267-b18f-96f7de641ee9"
+          },
+          "identity": [
+            {
+              "pattern": "^←淘宝首钱卡$",
+              "bounds": [
+                38,
+                135,
+                432,
+                203
+              ]
+            },
+            {
+              "pattern": "^省钱精选$",
+              "bounds": [
+                28,
+                715,
+                219,
+                764
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                920,
+                1842,
+                1017,
+                1873
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1877,
+                1010,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-49-31-673Z/77ce1e6b-a576-4ac4-9dc1-e43455080487.png",
+            "sha256": "b11bdb02cf91f0a877e416a9212dc1f21d2fdb5ad7353bb60bc46e4b2f57a870",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-49-31-673Z/77ce1e6b-a576-4ac4-9dc1-e43455080487.json",
+            "ocrSha256": "4822875e250795852d7705480c4038c43b3402413135bf83442fd1edec8a1d86",
+            "frameId": "77ce1e6b-a576-4ac4-9dc1-e43455080487"
+          },
+          "identity": [
+            {
+              "pattern": "^←淘宝首钱卡$",
+              "bounds": [
+                38,
+                135,
+                432,
+                203
+              ]
+            },
+            {
+              "pattern": "^省钱精选$",
+              "bounds": [
+                28,
+                715,
+                216,
+                764
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^\\+30$",
+              "bounds": [
+                934,
+                1692,
+                1003,
+                1723
+              ]
+            },
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                906,
+                1842,
+                1035,
+                1873
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1877,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              896,
+              1682,
+              1055,
+              1734
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ],
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ]
+          ],
+          "quote": "+30 任务已完成 继续逛逛吧"
+        }
+      },
+      {
+        "task": {
+          "name": "拍立淘逛感兴趣的宝贝",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:cedfd6a323bfae0fa9ce3d3976f239183a8c2e264a494ac37f614fadf35ae7b5",
+        "sourceRunIds": [
+          162
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-51-23-154Z/result.json",
+          "resultSha256": "e2574319eb835c2aae37c1d180fdffed8ccda3bf0469acd1cb1ac215ec6d3b33",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/accounts/taobao/tb_main/tb_coin/sessions/stagedsession_8aaa9adbb8b039c423cd37e15fda6422961a342b9404b4e8e8644249ad9d6d0d.json",
+          "sessionSha256": "e23b7cd944e4875d6d34c87d31bc1cff1dbba53fbdc5891be87e57d551afcef0"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              916,
+              1841,
+              1014,
+              1874
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1873,
+              1010,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-51-23-154Z/f4697d10-c412-4c62-ab8f-c32451bbee54.png",
+            "sha256": "fb2c976ddcc56853b13bd21b76c4c14f73f981bb708208bc368eb6c48224e7b1",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-51-23-154Z/f4697d10-c412-4c62-ab8f-c32451bbee54.json",
+            "ocrSha256": "d91762f7487a2da0fda0ee379902d08c1f367585c02629b22d14de835cfa6191",
+            "frameId": "f4697d10-c412-4c62-ab8f-c32451bbee54"
+          },
+          "identity": [
+            {
+              "pattern": "^找到以下宝贝$",
+              "bounds": [
+                118,
+                138,
+                370,
+                187
+              ]
+            },
+            {
+              "pattern": "^综合$",
+              "bounds": [
+                704,
+                258,
+                780,
+                300
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                916,
+                1841,
+                1014,
+                1874
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1873,
+                1010,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-51-23-154Z/f5a65ae8-8b90-4df4-80e7-d029b5280602.png",
+            "sha256": "1e26af073cb12115a7547e05a3075aa17a6b9c130d08a348e10550c6ce30f80a",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-51-23-154Z/f5a65ae8-8b90-4df4-80e7-d029b5280602.json",
+            "ocrSha256": "44723bfd613883017d1c0653844eb3ed8ae28d087a9db5cc7051dfccc7a3433c",
+            "frameId": "f5a65ae8-8b90-4df4-80e7-d029b5280602"
+          },
+          "identity": [
+            {
+              "pattern": "^找到以下宝贝$",
+              "bounds": [
+                118,
+                138,
+                370,
+                187
+              ]
+            },
+            {
+              "pattern": "^综合$",
+              "bounds": [
+                704,
+                258,
+                780,
+                300
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^\\+20$",
+              "bounds": [
+                934,
+                1692,
+                1003,
+                1723
+              ]
+            },
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                902,
+                1841,
+                1035,
+                1874
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1872,
+                1035,
+                1906
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              896,
+              1682,
+              1055,
+              1734
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ],
+            [
+              900,
+              1834,
+              1048,
+              1918
+            ]
+          ],
+          "quote": "+20 任务已完成 继续逛逛吧"
+        }
+      },
+      {
+        "task": {
+          "name": "查看我的会员等级",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:dcc6cf7699ea442acbd5944074bab1320b54c44dd0a382ed95ac4a04e39ebb82",
+        "sourceRunIds": [
+          164
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/result.json",
+          "resultSha256": "7aaa19e5d80f9887475258b75803fcdce60a8447961e6e809bdcf7927f9534f1",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/accounts/taobao/tb_main/tb_coin/sessions/stagedsession_2a69425b5e3afae21c1dc10bdb1a178bc408b758f6b8a77c0319fd7f7e935986.json",
+          "sessionSha256": "94191df74fb02a7b7a1c6620b9b3d8b17b75d9ff7fe76c0c79ba294510626b92"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1873,
+              1007,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/17f0f2a7-5c8a-4528-815a-9eb1794cf5ff.png",
+            "sha256": "1695dbb1f53508c32f6dca759230f581a3479ed5206cdfcb683bf733e360ad96",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/17f0f2a7-5c8a-4528-815a-9eb1794cf5ff.json",
+            "ocrSha256": "67f778c3e4025cab126b09359fa1c1e234e282f9c4b68593e9a992a11a7941b9",
+            "frameId": "17f0f2a7-5c8a-4528-815a-9eb1794cf5ff"
+          },
+          "identity": [
+            {
+              "pattern": "^青铜会员$",
+              "bounds": [
+                94,
+                383,
+                373,
+                465
+              ]
+            },
+            {
+              "pattern": "^青铜$",
+              "bounds": [
+                192,
+                143,
+                272,
+                188
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1873,
+                1007,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ],
+          "componentOcr": "partial-with-full-component-pixels"
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/67778e8d-a131-44ce-a8f7-3f8e9249a1a2.png",
+            "sha256": "99c3732f120aec0b70c75857cfdc40cc93d68f871565f514dcf117282a903bb8",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/67778e8d-a131-44ce-a8f7-3f8e9249a1a2.json",
+            "ocrSha256": "309d422530379b613ee5e94b34aba7132025e8b466aca629b29b586f3c2f0f18",
+            "frameId": "67778e8d-a131-44ce-a8f7-3f8e9249a1a2"
+          },
+          "identity": [
+            {
+              "pattern": "^青铜会员$",
+              "bounds": [
+                94,
+                383,
+                373,
+                465
+              ]
+            },
+            {
+              "pattern": "^青铜$",
+              "bounds": [
+                192,
+                143,
+                272,
+                188
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^\\+30$",
+              "bounds": [
+                934,
+                1692,
+                1000,
+                1723
+              ]
+            },
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                906,
+                1841,
+                1035,
+                1874
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1876,
+                1035,
+                1906
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ],
+          "quote": "+30 任务已完成 继续逛逛吧",
+          "componentOcr": "partial-with-full-component-pixels"
+        },
+        "requirementEvidence": {
+          "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/35066515-5067-487e-8299-5608f66ee7a6.png",
+          "sha256": "819c6ba1f2c4ae7d2f22de28acc2f71d43e0713b54040dc1d28d6471e5a76053",
+          "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-53-12-088Z/35066515-5067-487e-8299-5608f66ee7a6.json",
+          "ocrSha256": "1db4ee30cfbf258c240641cd42aa3faa16671221925911edd6496945bd658e42",
+          "frameId": "35066515-5067-487e-8299-5608f66ee7a6"
+        }
+      },
+      {
+        "task": {
+          "name": "看看你关注的新品动态",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:0c3db052a8b11314b01448fd984742ab320616d951eaff7e9dcce73135bb2cf6",
+        "sourceRunIds": [
+          165
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/result.json",
+          "resultSha256": "1b356556eb5e1cbdb2bb3ae7a9fcebab7bc730b71d73c640c388c711c8ac4d61",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/accounts/taobao/tb_main/tb_coin/sessions/stagedsession_cd85ef35370e7b9262f40eecc360874e29308c5ff8ac37e3f7c9a35b5fcdec29.json",
+          "sessionSha256": "ee7051f2ab031ca53183f07d393298630851b743548199bfcbca45713b63a02e"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1877,
+              1010,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/a77cf4eb-e430-430f-a6b5-25fed7700612.png",
+            "sha256": "9d5f01613c9b175aab7d4419101025e787bfd73b0f885c6c4a079702a06d0f4f",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/a77cf4eb-e430-430f-a6b5-25fed7700612.json",
+            "ocrSha256": "0b553dcfef175e0bdf12c50a4d5202483fa7b64727aa2a3a0507b32ecba5f7fc",
+            "frameId": "a77cf4eb-e430-430f-a6b5-25fed7700612"
+          },
+          "identity": [
+            {
+              "pattern": "^关注$",
+              "bounds": [
+                495,
+                136,
+                585,
+                185
+              ]
+            },
+            {
+              "pattern": "^分类$",
+              "bounds": [
+                965,
+                265,
+                1045,
+                307
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1877,
+                1010,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ],
+          "componentOcr": "partial-with-full-component-pixels"
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/a74382f2-099a-4e37-9e76-8a27d0713407.png",
+            "sha256": "04d11f2c1cc663d74fb79c5e197967b11de6c199a1406e2ac74d8aebfbab5404",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/a74382f2-099a-4e37-9e76-8a27d0713407.json",
+            "ocrSha256": "959e972d05ba720ade9fd19e84a058ab3aec78137ebe8a5fbfbf61a01605aa7e",
+            "frameId": "a74382f2-099a-4e37-9e76-8a27d0713407"
+          },
+          "identity": [
+            {
+              "pattern": "^关注$",
+              "bounds": [
+                495,
+                136,
+                585,
+                185
+              ]
+            },
+            {
+              "pattern": "^分类$",
+              "bounds": [
+                965,
+                265,
+                1045,
+                307
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1873,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1740,
+              1006,
+              1800
+            ]
+          ],
+          "quote": "继续逛逛吧",
+          "componentOcr": "partial-with-full-component-pixels"
+        },
+        "requirementEvidence": {
+          "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/0e97418c-6ab4-4f4a-9987-0ba30d26bc09.png",
+          "sha256": "07a022a7569ff55e2ba3209d1615089b21c3117d19805e4feeafa4a94199f258",
+          "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T07-54-26-636Z/0e97418c-6ab4-4f4a-9987-0ba30d26bc09.json",
+          "ocrSha256": "558b9a654447968adde8bbb4a2733ec2aa4ae819d5d4714db5182d4379ce640e",
+          "frameId": "0e97418c-6ab4-4f4a-9987-0ba30d26bc09"
+        }
+      },
+      {
+        "task": {
+          "name": "你关注的商品都可抵",
+          "instruction": "浏览15秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:716ebf17b05542ee93c725e592f1fe7681b2602d99a295f8836b5cdd38899fcb",
+        "sourceRunIds": [
+          129
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/result.json",
+          "resultSha256": "7dcf277483528dcf7f276e049c0fa5910dd741ad3742a9f12123bf379066399b",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/ab24893f0eda1665a828aa0ab17913429f1d34d6639a45beadc4e4744d81ff3c.json",
+          "sessionSha256": "ab24893f0eda1665a828aa0ab17913429f1d34d6639a45beadc4e4744d81ff3c"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 15000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览15秒$",
+            "bounds": [
+              913,
+              1841,
+              1021,
+              1874
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1877,
+              1010,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-4.png",
+            "sha256": "e3c2d12fbe9680b72f3eb376fb4a6092029c183682835ceac98d51cb65eb5081",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-4.json",
+            "ocrSha256": "643495c75d2ecd2c39b668683af28f07dff43a8ebc5a4d715f598ce35ff01c9b",
+            "frameId": "frame-4",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/summary.json",
+              "summarySha256": "03ef1e5b3b29851bdb632ee8270af29afa2775fc2cbb8371c71145bfd05a43e4",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^←我的足迹币1440$",
+              "bounds": [
+                42,
+                140,
+                498,
+                192
+              ]
+            },
+            {
+              "pattern": "^浏览过$",
+              "bounds": [
+                84,
+                576,
+                202,
+                617
+              ]
+            },
+            {
+              "pattern": "^加购过$",
+              "bounds": [
+                348,
+                576,
+                467,
+                617
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览15秒$",
+              "bounds": [
+                913,
+                1841,
+                1021,
+                1874
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1877,
+                1010,
+                1905
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1735,
+              1006,
+              1795
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-5.png",
+            "sha256": "5a4cc61d8bf10d0345fb184e2a327d676980ff2240d592afac490e3c164330c9",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-5.json",
+            "ocrSha256": "922128f062acd5d41ff91287ccb104df764f51ba69879ac776911c3de0f932c7",
+            "frameId": "frame-5",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/summary.json",
+              "summarySha256": "03ef1e5b3b29851bdb632ee8270af29afa2775fc2cbb8371c71145bfd05a43e4",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^←我的足迹$",
+              "bounds": [
+                38,
+                140,
+                334,
+                195
+              ]
+            },
+            {
+              "pattern": "^浏览过$",
+              "bounds": [
+                84,
+                576,
+                202,
+                617
+              ]
+            },
+            {
+              "pattern": "^加购过$",
+              "bounds": [
+                348,
+                576,
+                467,
+                617
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                906,
+                1841,
+                1035,
+                1874
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1877,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1735,
+              1006,
+              1795
+            ]
+          ],
+          "quote": "任务已完成 继续逛逛吧"
+        },
+        "receiptOnly": false,
+        "provenance": {
+          "kind": "historical-dwell-v1",
+          "sourceRunId": 129,
+          "executionRunId": 129,
+          "newSessionValidation": false,
+          "scopeSource": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/ab24893f0eda1665a828aa0ab17913429f1d34d6639a45beadc4e4744d81ff3c.json",
+          "sourceOrigin": "${CHECKIN_WORKSPACE}/data/account-task-data/taobao/tb_main/tb_coin/bundle.json",
+          "executionId": "execution_76967a90e8328f918c08d86ba5635d0cb71faf482dbe7256ed95333df7438b2a",
+          "files": [
+            {
+              "path": "${CHECKIN_WORKSPACE}/docs/历史已学任务本地合同草案.json",
+              "sha256": "cf827410f03e52165fcc3b262b2144a3265fd08edce8c190588fe5925a90c07f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/result.json",
+              "sha256": "7dcf277483528dcf7f276e049c0fa5910dd741ad3742a9f12123bf379066399b"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/summary.json",
+              "sha256": "03ef1e5b3b29851bdb632ee8270af29afa2775fc2cbb8371c71145bfd05a43e4"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-4.png",
+              "sha256": "e3c2d12fbe9680b72f3eb376fb4a6092029c183682835ceac98d51cb65eb5081"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-4.json",
+              "sha256": "643495c75d2ecd2c39b668683af28f07dff43a8ebc5a4d715f598ce35ff01c9b"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-5.png",
+              "sha256": "5a4cc61d8bf10d0345fb184e2a327d676980ff2240d592afac490e3c164330c9"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-5.json",
+              "sha256": "922128f062acd5d41ff91287ccb104df764f51ba69879ac776911c3de0f932c7"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/ab24893f0eda1665a828aa0ab17913429f1d34d6639a45beadc4e4744d81ff3c.json",
+              "sha256": "ab24893f0eda1665a828aa0ab17913429f1d34d6639a45beadc4e4744d81ff3c"
+            }
+          ],
+          "requirementSource": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-08-18-455Z/frame-4.json"
+        }
+      },
+      {
+        "task": {
+          "name": "逛逛金币加抵好货",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:37b2e40c04c844ef0fda1166278fd50184e6d6e1feba440e9ee87163d1215c9b",
+        "sourceRunIds": [
+          130
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/result.json",
+          "resultSha256": "da72596fc139bcd954123992667b604ef41e0bf9e2ac735eebaa5843cc6d8bdc",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/4e7e3ceed52105e3ac6ccfbdad85e64a0079a6d6fcbe5e52582515a78475bdfd.json",
+          "sessionSha256": "4e7e3ceed52105e3ac6ccfbdad85e64a0079a6d6fcbe5e52582515a78475bdfd"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              919,
+              1478,
+              1018,
+              1511
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1514,
+              1010,
+              1545
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-8.png",
+            "sha256": "74ce1fd5a98295e11b84b92e6f8cc75b9686630ede6a70641d6eefe758636c18",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-8.json",
+            "ocrSha256": "c786ab6303d133caafd1ec91c0dafddeedeaffbf222fec774cbfc31927e6563b",
+            "frameId": "frame-8",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/summary.json",
+              "summarySha256": "b260fb8c751e28024c6b8818ca7c56f5a3b400921fc3b8bd0e57d2c3b64f938a",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^君乐宝百汇专卖店$",
+              "bounds": [
+                216,
+                140,
+                533,
+                185
+              ]
+            },
+            {
+              "pattern": "^君乐宝$",
+              "bounds": [
+                122,
+                143,
+                188,
+                171
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                919,
+                1478,
+                1018,
+                1511
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1514,
+                1010,
+                1545
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1472,
+              1048,
+              1555
+            ],
+            [
+              926,
+              1377,
+              1006,
+              1437
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-9.png",
+            "sha256": "946d0c3e433cce5af5aba4de2b92a0389a13b7dada4577ba601832855997477f",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-9.json",
+            "ocrSha256": "2a828d62083616b0b4f3aad84d8ef43b350603b88947bb33fce9d2c78cb707e0",
+            "frameId": "frame-9",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/summary.json",
+              "summarySha256": "b260fb8c751e28024c6b8818ca7c56f5a3b400921fc3b8bd0e57d2c3b64f938a",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^君乐宝百汇专卖店$",
+              "bounds": [
+                213,
+                136,
+                533,
+                185
+              ]
+            },
+            {
+              "pattern": "^君乐宝$",
+              "bounds": [
+                118,
+                143,
+                188,
+                167
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                902,
+                1479,
+                1035,
+                1510
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1514,
+                1035,
+                1545
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1472,
+              1048,
+              1555
+            ],
+            [
+              926,
+              1377,
+              1006,
+              1437
+            ]
+          ],
+          "quote": "任务已完成 继续逛逛吧"
+        },
+        "receiptOnly": false,
+        "provenance": {
+          "kind": "historical-dwell-v1",
+          "sourceRunId": 130,
+          "executionRunId": 130,
+          "newSessionValidation": false,
+          "scopeSource": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/4e7e3ceed52105e3ac6ccfbdad85e64a0079a6d6fcbe5e52582515a78475bdfd.json",
+          "sourceOrigin": "${CHECKIN_WORKSPACE}/data/account-task-data/taobao/tb_main/tb_coin/bundle.json",
+          "executionId": "execution_69223140d07953f93b2b50b05738d033feb60a2a503e901e6314fbffc916ea72",
+          "files": [
+            {
+              "path": "${CHECKIN_WORKSPACE}/docs/历史已学任务本地合同草案.json",
+              "sha256": "cf827410f03e52165fcc3b262b2144a3265fd08edce8c190588fe5925a90c07f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/result.json",
+              "sha256": "da72596fc139bcd954123992667b604ef41e0bf9e2ac735eebaa5843cc6d8bdc"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/summary.json",
+              "sha256": "b260fb8c751e28024c6b8818ca7c56f5a3b400921fc3b8bd0e57d2c3b64f938a"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-8.png",
+              "sha256": "74ce1fd5a98295e11b84b92e6f8cc75b9686630ede6a70641d6eefe758636c18"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-8.json",
+              "sha256": "c786ab6303d133caafd1ec91c0dafddeedeaffbf222fec774cbfc31927e6563b"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-9.png",
+              "sha256": "946d0c3e433cce5af5aba4de2b92a0389a13b7dada4577ba601832855997477f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-9.json",
+              "sha256": "2a828d62083616b0b4f3aad84d8ef43b350603b88947bb33fce9d2c78cb707e0"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/4e7e3ceed52105e3ac6ccfbdad85e64a0079a6d6fcbe5e52582515a78475bdfd.json",
+              "sha256": "4e7e3ceed52105e3ac6ccfbdad85e64a0079a6d6fcbe5e52582515a78475bdfd"
+            }
+          ],
+          "requirementSource": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-35-12-957Z/frame-8.json"
+        }
+      },
+      {
+        "task": {
+          "name": "来淘宝闪购分百亿补贴",
+          "instruction": "下单最高+1000，浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:160a0c60a3bea47b4b236648d3cc11e3e37fb0aac49f48f240567f655f53b71d",
+        "sourceRunIds": [
+          131
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/result.json",
+          "resultSha256": "ec0548ac3d80aea62c9618c730ebf0b68675d89493c607b01c730f958bed9364",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/9c5e44faaf350b58c450a5d83a4011d4761a07bd95c732ce7b6316864c85b61e.json",
+          "sessionSha256": "9c5e44faaf350b58c450a5d83a4011d4761a07bd95c732ce7b6316864c85b61e"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 10000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览10秒$",
+            "bounds": [
+              913,
+              1838,
+              1021,
+              1870
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1873,
+              1007,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-6.png",
+            "sha256": "7f9813b2462f0d71d8a5e49ea13729e2f6a2af59a806f5d3a6b28cc2d9a16692",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-6.json",
+            "ocrSha256": "5070b1a44b92931edf35b211b0af0c6a6c0eef725c77b9e0ffdfd9f7604dac9a",
+            "frameId": "frame-6",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/summary.json",
+              "summarySha256": "a940544cc7d5a80776aeedb301d7e899cf03a8a1848dda6429db90bfe6332a48",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^淘宝闪购×淘金币$",
+              "bounds": [
+                132,
+                140,
+                603,
+                199
+              ]
+            },
+            {
+              "pattern": "^搜索$",
+              "bounds": [
+                923,
+                258,
+                1003,
+                303
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览10秒$",
+              "bounds": [
+                913,
+                1838,
+                1021,
+                1870
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1873,
+                1007,
+                1905
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1735,
+              1006,
+              1795
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-10.png",
+            "sha256": "df185e8e382bbdfa121919353e4c4be7c90569e5fa5a11459665a9a44d7d7167",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-10.json",
+            "ocrSha256": "d6adede7af7843da3a9192d9ea3c9dc8fb0596c361b4fc65a3ada17292703db2",
+            "frameId": "frame-10",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/summary.json",
+              "summarySha256": "a940544cc7d5a80776aeedb301d7e899cf03a8a1848dda6429db90bfe6332a48",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^淘宝闪购x淘全币$",
+              "bounds": [
+                132,
+                140,
+                603,
+                199
+              ]
+            },
+            {
+              "pattern": "^搜索$",
+              "bounds": [
+                923,
+                258,
+                1003,
+                303
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1873,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1830,
+              1048,
+              1914
+            ],
+            [
+              926,
+              1735,
+              1006,
+              1795
+            ]
+          ],
+          "quote": "继续逛逛吧"
+        },
+        "receiptOnly": false,
+        "provenance": {
+          "kind": "historical-dwell-v1",
+          "sourceRunId": 131,
+          "executionRunId": 131,
+          "newSessionValidation": false,
+          "scopeSource": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/9c5e44faaf350b58c450a5d83a4011d4761a07bd95c732ce7b6316864c85b61e.json",
+          "sourceOrigin": "${CHECKIN_WORKSPACE}/data/account-task-data/taobao/tb_main/tb_coin/bundle.json",
+          "executionId": "execution_025b08dc570e4411a9824e2f74a8fa4f88cf55f86ffc05cfd4248f3ba060f9ea",
+          "files": [
+            {
+              "path": "${CHECKIN_WORKSPACE}/docs/历史已学任务本地合同草案.json",
+              "sha256": "cf827410f03e52165fcc3b262b2144a3265fd08edce8c190588fe5925a90c07f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/result.json",
+              "sha256": "ec0548ac3d80aea62c9618c730ebf0b68675d89493c607b01c730f958bed9364"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/summary.json",
+              "sha256": "a940544cc7d5a80776aeedb301d7e899cf03a8a1848dda6429db90bfe6332a48"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-6.png",
+              "sha256": "7f9813b2462f0d71d8a5e49ea13729e2f6a2af59a806f5d3a6b28cc2d9a16692"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-6.json",
+              "sha256": "5070b1a44b92931edf35b211b0af0c6a6c0eef725c77b9e0ffdfd9f7604dac9a"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-10.png",
+              "sha256": "df185e8e382bbdfa121919353e4c4be7c90569e5fa5a11459665a9a44d7d7167"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-10.json",
+              "sha256": "d6adede7af7843da3a9192d9ea3c9dc8fb0596c361b4fc65a3ada17292703db2"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/9c5e44faaf350b58c450a5d83a4011d4761a07bd95c732ce7b6316864c85b61e.json",
+              "sha256": "9c5e44faaf350b58c450a5d83a4011d4761a07bd95c732ce7b6316864c85b61e"
+            }
+          ],
+          "requirementSource": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T00-53-49-661Z/frame-6.json"
+        }
+      },
+      {
+        "task": {
+          "name": "充话费0元起！",
+          "instruction": "浏览5秒"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:9a8a0fa9583892d41bb7916b5857ce58f6f4e677d45291deb10cd3ceb8ca0759",
+        "sourceRunIds": [
+          132
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/result.json",
+          "resultSha256": "1ce03fbd402a3e51e9faf51ce84f0fdf5e8f2d916a6d1147148f07f03e26333f",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/047e5363f031c7d5be6888d17400950c5941b7f1b4580d1f3b8e196b9d20c1cf.json",
+          "sessionSha256": "047e5363f031c7d5be6888d17400950c5941b7f1b4580d1f3b8e196b9d20c1cf"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              920,
+              1479,
+              1017,
+              1510
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1514,
+              1007,
+              1545
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-4.png",
+            "sha256": "4f26795dfcddd89da2779872ebf340d4b9725c0794229547c756be105806b86b",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-4.json",
+            "ocrSha256": "651dab1a43cf304dedb9f804891dda0b28179af89690238f45023121e1318b49",
+            "frameId": "frame-4",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/summary.json",
+              "summarySha256": "8df4a67654cb4ccb77776bdae915dfdb4bfeec38be61fe20f4e9805936622716",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^充话费不只95折$",
+              "bounds": [
+                160,
+                220,
+                930,
+                350
+              ]
+            },
+            {
+              "pattern": "^官方直充秒到账$",
+              "bounds": [
+                425,
+                1803,
+                655,
+                1838
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                920,
+                1479,
+                1017,
+                1510
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1514,
+                1007,
+                1545
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1472,
+              1048,
+              1555
+            ],
+            [
+              926,
+              1377,
+              1006,
+              1437
+            ]
+          ]
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-5.png",
+            "sha256": "8db128d6808c777bdeca4c6ca0d376048e46c7712c7e841be4bd0eae1701a6c1",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-5.json",
+            "ocrSha256": "79a08b269a63ef8df16aea8c03e6cb8d14a10f82b25aa848f3875e5728e3f86c",
+            "frameId": "frame-5",
+            "derivation": {
+              "summaryPath": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/summary.json",
+              "summarySha256": "8df4a67654cb4ccb77776bdae915dfdb4bfeec38be61fe20f4e9805936622716",
+              "owner": {
+                "package": "com.taobao.taobao",
+                "userId": 0
+              }
+            }
+          },
+          "identity": [
+            {
+              "pattern": "^充话费不只95折$",
+              "bounds": [
+                160,
+                220,
+                930,
+                350
+              ]
+            },
+            {
+              "pattern": "^官方直充秒到账$",
+              "bounds": [
+                425,
+                1803,
+                655,
+                1838
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^任务已完成$",
+              "bounds": [
+                902,
+                1479,
+                1035,
+                1511
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                902,
+                1514,
+                1035,
+                1549
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              898,
+              1472,
+              1048,
+              1555
+            ],
+            [
+              926,
+              1377,
+              1006,
+              1437
+            ]
+          ],
+          "quote": "任务已完成 继续逛逛吧"
+        },
+        "receiptOnly": false,
+        "provenance": {
+          "kind": "historical-dwell-v1",
+          "sourceRunId": 132,
+          "executionRunId": 132,
+          "newSessionValidation": false,
+          "scopeSource": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/047e5363f031c7d5be6888d17400950c5941b7f1b4580d1f3b8e196b9d20c1cf.json",
+          "sourceOrigin": "${CHECKIN_WORKSPACE}/data/account-task-data/taobao/tb_main/tb_coin/bundle.json",
+          "executionId": "execution_50170593b1d6be56480882f0be8cbad7616aa8b1315bd0c1e6c79edfe18111af",
+          "files": [
+            {
+              "path": "${CHECKIN_WORKSPACE}/docs/历史已学任务本地合同草案.json",
+              "sha256": "cf827410f03e52165fcc3b262b2144a3265fd08edce8c190588fe5925a90c07f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/result.json",
+              "sha256": "1ce03fbd402a3e51e9faf51ce84f0fdf5e8f2d916a6d1147148f07f03e26333f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/summary.json",
+              "sha256": "8df4a67654cb4ccb77776bdae915dfdb4bfeec38be61fe20f4e9805936622716"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-4.png",
+              "sha256": "4f26795dfcddd89da2779872ebf340d4b9725c0794229547c756be105806b86b"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-4.json",
+              "sha256": "651dab1a43cf304dedb9f804891dda0b28179af89690238f45023121e1318b49"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-5.png",
+              "sha256": "8db128d6808c777bdeca4c6ca0d376048e46c7712c7e841be4bd0eae1701a6c1"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-5.json",
+              "sha256": "79a08b269a63ef8df16aea8c03e6cb8d14a10f82b25aa848f3875e5728e3f86c"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/047e5363f031c7d5be6888d17400950c5941b7f1b4580d1f3b8e196b9d20c1cf.json",
+              "sha256": "047e5363f031c7d5be6888d17400950c5941b7f1b4580d1f3b8e196b9d20c1cf"
+            }
+          ],
+          "requirementSource": "${CHECKIN_WORKSPACE}/evidence/ocr-browse-2026-11-01T01-18-29-192Z/frame-4.json"
+        }
+      },
+      {
+        "task": {
+          "name": "天天签到免费拿IP周边",
+          "instruction": "浏览最新礼盒得"
+        },
+        "version": "dwell-browse-candidate-v1:sha256:7a9ea5e9961852ce36c29480a88b339193ad5e555cfe25dbddebeb29dddf0f75",
+        "sourceRunIds": [
+          134
+        ],
+        "source": {
+          "resultPath": "${CHECKIN_WORKSPACE}/evidence/staged-reconcile-2026-11-01T02-18-43-435Z/result.json",
+          "resultSha256": "2588025506940b4ddf96e773127ece2f289706d5ad133ff56f8556742c0a3621",
+          "sessionPath": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/8c81f39032cd0fb2bbfc3afe2fa62d8385e8bc46c06ebecb05791e75387630ce.json",
+          "sessionSha256": "8c81f39032cd0fb2bbfc3afe2fa62d8385e8bc46c06ebecb05791e75387630ce"
+        },
+        "owner": {
+          "package": "com.taobao.taobao",
+          "userId": 0
+        },
+        "width": 1080,
+        "height": 2400,
+        "dwellMs": 5000,
+        "knownRequirements": [
+          {
+            "pattern": "^浏览5秒$",
+            "bounds": [
+              916,
+              1841,
+              1014,
+              1874
+            ]
+          },
+          {
+            "pattern": "^得奖励$",
+            "bounds": [
+              927,
+              1877,
+              1010,
+              1905
+            ]
+          }
+        ],
+        "browsing": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.png",
+            "sha256": "4fafda5f9a6d4b6cc78b60f32898bf39d975223db8871ff201f3f5d716ec7809",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.json",
+            "ocrSha256": "c7264556c624064124230a656f28bf5dbb945d1e1eb85123a6f2da51562a4f79",
+            "frameId": "59fd5523-153a-4811-812d-f61d1dc3fdd7",
+            "rawPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.ocr.json",
+            "rawSha256": "cff60379ca5a57d2bcd59de202a65f644fdbfa7276f0a98469c5981f2f731e33"
+          },
+          "identity": [
+            {
+              "pattern": "^淘宝成就$",
+              "bounds": [
+                118,
+                139,
+                331,
+                196
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^浏览5秒$",
+              "bounds": [
+                916,
+                1841,
+                1014,
+                1874
+              ]
+            },
+            {
+              "pattern": "^得奖励$",
+              "bounds": [
+                927,
+                1877,
+                1010,
+                1905
+              ]
+            }
+          ],
+          "visualBoxes": []
+        },
+        "receipt": {
+          "reference": {
+            "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/c49cc7ff-85c7-45f9-8530-c861231fe0e8.png",
+            "sha256": "ad763cefd616d396467d027278be8b82aa2808deaacd79506db16058e9c07677",
+            "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/c49cc7ff-85c7-45f9-8530-c861231fe0e8.json",
+            "ocrSha256": "c607ece2e2a8362046a7138321660ae85fc5a3981f35ba937729702dd911e8c9",
+            "frameId": "c49cc7ff-85c7-45f9-8530-c861231fe0e8"
+          },
+          "identity": [
+            {
+              "pattern": "^淘宝成就$",
+              "bounds": [
+                118,
+                139,
+                331,
+                196
+              ]
+            },
+            {
+              "pattern": "^更多$",
+              "bounds": [
+                975,
+                244,
+                1035,
+                276
+              ]
+            }
+          ],
+          "anchors": [
+            {
+              "pattern": "^任务已完成“$",
+              "bounds": [
+                892,
+                1831,
+                1052,
+                1870
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                899,
+                1873,
+                1035,
+                1905
+              ]
+            }
+          ],
+          "componentOcr": "partial-with-full-component-pixels",
+          "visualBoxes": [
+            [
+              886,
+              1825,
+              1056,
+              1910
+            ],
+            [
+              926,
+              1730,
+              1006,
+              1790
+            ]
+          ],
+          "quote": "任务已完成“ 继续逛逛吧"
+        },
+        "receiptOnly": false,
+        "provenance": {
+          "kind": "historical-dwell-v1",
+          "sourceRunId": 134,
+          "executionRunId": 133,
+          "newSessionValidation": false,
+          "scopeSource": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/8c81f39032cd0fb2bbfc3afe2fa62d8385e8bc46c06ebecb05791e75387630ce.json",
+          "sourceOrigin": "${CHECKIN_WORKSPACE}/data/account-task-data/taobao/tb_main/tb_coin/bundle.json",
+          "executionId": "execution_90d443c6e3ed17eb33cfdac49c1e24780267b23efb4eb532ad0f2af816cc17b9",
+          "taskAttemptId": "e55bda95-e0ce-4c06-a592-42290cd950eb",
+          "files": [
+            {
+              "path": "${CHECKIN_WORKSPACE}/docs/历史已学任务本地合同草案.json",
+              "sha256": "cf827410f03e52165fcc3b262b2144a3265fd08edce8c190588fe5925a90c07f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-reconcile-2026-11-01T02-18-43-435Z/result.json",
+              "sha256": "2588025506940b4ddf96e773127ece2f289706d5ad133ff56f8556742c0a3621"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/result.json",
+              "sha256": "8d7159d64bdc7831956547e4f8c674870bedae1345a45d06c871cb9a12df951a"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/stages.json",
+              "sha256": "11760a31e7674a634ba49bcb164f3c31781ef6ae2dd71e04379655242296b736"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-reconcile-2026-11-01T02-18-43-435Z/stages.json",
+              "sha256": "50e90c72085f371e000ee26fa325a4e04f83ef13cfae1370a3a0d49c85dbcb3f"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/566d5d64-7027-4fc3-ad30-5199778c9e7a.png",
+              "sha256": "fd0009d7ae8a74649eba303e55e9562e570ac626550c298bdc4c6ed80d15fc55"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/566d5d64-7027-4fc3-ad30-5199778c9e7a.json",
+              "sha256": "2290c2f81f598ae47bf937c20a7ee3c68e16b4d745fc8a020a205c1c61608127"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/566d5d64-7027-4fc3-ad30-5199778c9e7a.ocr.json",
+              "sha256": "c9f26882540e3250f3f1b2c580b8fc523a1320f8518b47b9ff5e40644a609227"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/c49cc7ff-85c7-45f9-8530-c861231fe0e8.png",
+              "sha256": "ad763cefd616d396467d027278be8b82aa2808deaacd79506db16058e9c07677"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/c49cc7ff-85c7-45f9-8530-c861231fe0e8.json",
+              "sha256": "c607ece2e2a8362046a7138321660ae85fc5a3981f35ba937729702dd911e8c9"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-01T02-12-46-281Z/c49cc7ff-85c7-45f9-8530-c861231fe0e8.ocr.json",
+              "sha256": "20d99716cc01fbdb0d15c7b736c329b406699b32ff047804afec7d129c2cfb24"
+            },
+            {
+              "path": "${CHECKIN_WORKSPACE}/data/stage-records/evidence-sources/8c81f39032cd0fb2bbfc3afe2fa62d8385e8bc46c06ebecb05791e75387630ce.json",
+              "sha256": "8c81f39032cd0fb2bbfc3afe2fa62d8385e8bc46c06ebecb05791e75387630ce"
+            }
+          ],
+          "requirementSource": "unknown; receipt only, 1000ms budget grants no waiting"
+        },
+        "learningRequirementEvidence": {
+          "path": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.png",
+          "sha256": "4fafda5f9a6d4b6cc78b60f32898bf39d975223db8871ff201f3f5d716ec7809",
+          "ocrPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.json",
+          "ocrSha256": "c7264556c624064124230a656f28bf5dbb945d1e1eb85123a6f2da51562a4f79",
+          "frameId": "59fd5523-153a-4811-812d-f61d1dc3fdd7",
+          "rawPath": "${CHECKIN_WORKSPACE}/evidence/staged-2026-11-02T00-19-22-514Z/59fd5523-153a-4811-812d-f61d1dc3fdd7.ocr.json",
+          "rawSha256": "cff60379ca5a57d2bcd59de202a65f644fdbfa7276f0a98469c5981f2f731e33"
+        },
+        "textPolicy": {
+          "version": "dwell-text-v2",
+          "title": {
+            "pattern": "^淘宝成就$",
+            "bounds": [
+              118,
+              139,
+              331,
+              196
+            ]
+          },
+          "componentBox": [
+            886,
+            1825,
+            1058,
+            1911
+          ],
+          "completion": [
+            {
+              "pattern": "^[一“”]?任务已完成[“”]?$",
+              "bounds": [
+                892,
+                1831,
+                1052,
+                1870
+              ]
+            },
+            {
+              "pattern": "^继续逛逛吧$",
+              "bounds": [
+                899,
+                1873,
+                1035,
+                1905
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "aiTaskRecovery": true,
+  "navigationPolicy": "current-text-v1",
+  "panelReadPolicy": "focused-v1",
+  "taskObservationPolicy": "current-components-v1",
+  "controllerCandidates": [
+    {
+      "family": "panel-claim",
+      "task": {
+        "name": "任务到访得金币",
+        "instruction": "每日来任务面板"
+      },
+      "contract": {
+        "version": "panel-claim-candidate-v1:c113f13f77a8adbdc29cc226b8823b9ea3cb4258dfb104a37bf8e3da7391d666",
+        "status": "candidate",
+        "family": "panel-claim",
+        "sourceRunIds": [
+          128
+        ],
+        "refs": [
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/result.json",
+            "sha256": "e54ca95d892f72a8f113480ecdffe4570206b1a0d3614feb75ea2d1d00c2d8fc"
+          },
+          {
+            "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/summary.json",
+            "sha256": "5a32f81f705e332f7da97a0ded914f60af8ad401a3962ab5339439f919b17971"
+          }
+        ],
+        "fixtures": [
+          {
+            "png": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-2.png",
+              "sha256": "e409e183efc970d891e757650241f56ea45758dbd1682b7031e71dced2d3b972"
+            },
+            "ocr": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-2.json",
+              "sha256": "4b0cc13972b96649ca640bfce618eb5bfbd7b1e138d643fe6d64d9e46733fb71"
+            }
+          },
+          {
+            "png": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-3.png",
+              "sha256": "feea080d0402395a41bb4db484c46abaeac33624ec3db26c479e3cf2269c7d29"
+            },
+            "ocr": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-3.json",
+              "sha256": "f50ef1742d12ed8a671385f07bb8d4d349988a28c489e8ebd94c20fa4017f10d"
+            }
+          },
+          {
+            "png": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-4.png",
+              "sha256": "dc4c8f15227c49990e460101fc618b2adbcd1e7b7bda1a0960ebac7d60635159"
+            },
+            "ocr": {
+              "path": "${CHECKIN_WORKSPACE}/evidence/ocr-arrival-2026-11-01T00-05-01-247Z/frame-4.json",
+              "sha256": "8af27bb410cd009b6573a6dab0b43956cda869a74b739fd3cec03ec1edb5e17f"
+            }
+          }
+        ]
+      },
+      "capturePolicy": {
+        "frames": 8,
+        "intervalMs": 250
+      },
+      "panelClaimPolicy": "current-semantic-v1"
+    }
+  ],
+  "interactionRoutes": [
+    {
+      "type": "search-browse",
+      "task": {
+        "name": "搜一搜你心仪的宝贝",
+        "instruction": "浏览"
+      },
+      "transitionWaitMs": 1000,
+      "loadingWaitsMs": [
+        1500,
+        1500
+      ],
+      "refreshReturnedPanel": true,
+      "returnSteps": [
+        "back",
+        "back",
+        "back"
+      ],
+      "continuousScroll": {
+        "requiredMs": 10000,
+        "maxSwipes": 12,
+        "maxMs": 15000,
+        "gestureMs": 900
+      }
+    },
+    {
+      "type": "quiz",
+      "task": {
+        "name": "淘金币趣味课堂",
+        "instruction": "参与答题"
+      },
+      "transitionWaitMs": 1000,
+      "loadingWaitsMs": [
+        1500,
+        1500
+      ],
+      "refreshReturnedPanel": true,
+      "returnSteps": [
+        "back",
+        "back",
+        "back"
+      ]
+    },
+    {
+      "type": "home-revisit",
+      "task": {
+        "name": "从首页回访",
+        "instruction": "从首页入口或搜索回访"
+      },
+      "transitionWaitMs": 1000,
+      "loadingWaitsMs": [
+        1000,
+        1000
+      ],
+      "returnSteps": [
+        "visible-exit"
+      ],
+      "refreshReturnedPanel": false,
+      "homeRevisit": {
+        "taskSteps": [
+          {
+            "from": "guide",
+            "role": "guide-home",
+            "to": "home"
+          },
+          {
+            "from": "home",
+            "role": "home-coin",
+            "to": "activity"
+          }
+        ],
+        "returnSteps": [
+          {
+            "from": "activity",
+            "role": "open-panel",
+            "to": "owning-panel"
+          }
+        ],
+        "capturePolicy": {
+          "frames": 8,
+          "intervalMs": 250
+        },
+        "deriveBudgetMs": 60000
+      }
+    }
+  ],
+  "round": {
+    "version": "dynamic-round-v1",
+    "batchId": "tasks-once-20261103",
+    "stateFile": "data/evidence/round-integration-20261103/state.json",
+    "priorPlanFiles": [
+      "data/evidence/plans/remaining-regression-20261102/plan.json",
+      "data/evidence/plans/regression-20261103/plan.json",
+      "data/evidence/plans/other-types-20261103/plan.json",
+      "data/evidence/plans/additional-interactions-20261103/plan.json",
+      "data/evidence/formal-interactions-20261103/plan.json"
+    ],
+    "exactSkips": [
+      "玩消消乐领金币",
+      "养小羊免费赚话费"
+    ],
+    "excludedRequirements": [
+      "invitation",
+      "spending",
+      "gameplay",
+      "cross-app",
+      "install",
+      "camera-upload",
+      "authentication"
+    ],
+    "attemptPolicy": "preserve-existing-once-per-identity",
+    "finish": "home-and-sleep",
+    "loopPolicy": "next-decision-v1"
+  }
+}

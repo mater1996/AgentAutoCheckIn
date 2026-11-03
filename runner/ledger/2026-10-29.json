@@ -1,0 +1,12 @@
+{
+  "xingin": {
+    "status": "NEEDS_LOGIN",
+    "evidence": "/Users/mater/Project/android-checkin/runner/evidence/2026-10-29-xingin-login.png",
+    "at": "22:49:38",
+    "wall_hits": [
+      "登录",
+      "账号下线",
+      "重新登录"
+    ]
+  }
+}

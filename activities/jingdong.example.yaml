@@ -1,0 +1,62 @@
+# 活动表 · 示例（复制为 activities/<app>.yaml 后填真实信息）
+#
+# entry      语义入口路径（配方生成时参考，不是坐标）
+# verify_any 成功判定词，任意命中即算成功
+# window     允许执行时段 HH:MM-HH:MM
+# reward     收益定义，cny_per_unit 是积分→人民币的唯一折算入口
+# state      active 正常 / dead 活动已结束 / pending 待验证
+
+app: jingdong
+account: jd_main
+activities:
+  - id: jd_signin
+    name: 京豆每日签到
+    entry: [我的, 京豆, 签到领京豆]
+    verify_any: [已签到, 已领取, 今日已签, 签到成功]
+    window: "08:00-12:00"
+    reward:
+      unit: 京豆
+      amount: 7
+      cny_per_unit: 0.01        # 100 京豆 = 1 元
+    enabled: true
+    state: pending              # 入口路径待实测确认
+
+  - id: jd_zhongdou
+    name: 种豆得豆
+    entry: [我的, 种豆得豆]
+    verify_any: [已领取, 已浇水]
+    window: "08:00-23:00"
+    reward:
+      unit: 京豆
+      amount: 5
+      cny_per_unit: 0.01
+    enabled: false              # 需要滑动/多次交互，二期再上
+    state: pending
+
+---
+app: taobao
+account: tb_main
+activities:
+  - id: tb_coin
+    name: 淘金币签到
+    entry: [领淘金币, 点我签到]
+    verify_any: [已签到, 签到成功, 已领取]
+    window: "09:00-13:00"
+    reward:
+      unit: 淘金币
+      amount: 10
+      cny_per_unit: 0.01        # 100 淘金币 = 1 元
+    enabled: true
+    state: pending              # 实测首页有「红包签到」「领淘金币」入口
+
+  - id: tb_farm
+    name: 芭芭农场
+    entry: [芭芭农场]
+    verify_any: [已领取, 今日已领]
+    window: "09:00-21:00"
+    reward:
+      unit: 元
+      amount: 0.1
+      cny_per_unit: 1.0
+    enabled: false              # 需要多次交互 + 可能看视频，二期
+    state: pending

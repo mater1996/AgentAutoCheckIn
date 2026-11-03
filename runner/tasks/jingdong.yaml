@@ -1,0 +1,10 @@
+app: jingdong
+name: 京东
+package: com.jingdong.app.mall
+launch_wait: 8.0
+window: 08:00-12:00
+verify_any:
+- 已签到
+- 已领取
+- 今日已签
+- 签到成功

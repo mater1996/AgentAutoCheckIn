@@ -1,0 +1,29 @@
+✔ ensurePanel false prevents task execution and initial collection (0.651209ms)
+✔ ensurePanel throwing is a prerequisite failure with an explicit reason (0.083958ms)
+✔ panel failure after entry does not consume a queued task (0.238667ms)
+✔ failed observation after a task cannot trigger another task or tier collection (3005.502458ms)
+✔ popup recovery that loses observation stops before cross-tier collection (3002.653083ms)
+✔ one bounded recovery can restore observation before the next task (3005.359875ms)
+✔ cross-tier predicate rejects either unknown observation (0.393334ms)
+✔ initial unknown observation exhausts bounded recovery without actions (6006.722709ms)
+✔ observation failure on the hard limit preserves the observation stop reason (3003.173875ms)
+✔ recovery step failure returns an observation failure instead of escaping the loop (3006.159083ms)
+✔ independent task quota reduction is progress while the reward counter stays saturated (1.350042ms)
+✔ unknown or malformed observations cannot imply completion or no remaining tasks (0.38575ms)
+✔ pure observation validator is usable by callers with untrusted input (0.056417ms)
+✔ reward threshold does not count as exhausted task quota (0.064583ms)
+✔ all_tiers continues at saturated progress within its marginal and time budgets (0.048875ms)
+✔ missing task counts remain unknown instead of being inferred from reward progress (0.410708ms)
+✔ probes reject malformed current counts and expose explicit validity (0.362416ms)
+✔ invalid observations retry even when the progress denominator is positive (1502.745833ms)
+✔ strict counter parsers never salvage negative, fractional, or unsafe readings (0.20825ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21114.301583
+
+exit_code=0

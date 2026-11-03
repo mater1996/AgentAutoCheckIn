@@ -1,0 +1,758 @@
+package com.mobilerun.portal.config
+
+import android.content.Context
+import android.content.SharedPreferences
+import com.mobilerun.portal.taskprompt.PortalActiveTaskRecord
+import com.mobilerun.portal.taskprompt.PortalCloudClient
+import com.mobilerun.portal.taskprompt.PortalTaskSettings
+import com.mobilerun.portal.taskprompt.PortalTaskTracking
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import java.lang.reflect.Modifier
+
+class ConfigManagerTaskPromptTest {
+
+    private lateinit var context: Context
+    private lateinit var sharedStore: MutableMap<String, Any?>
+    private lateinit var deviceStore: MutableMap<String, Any?>
+    private lateinit var secretsStore: MutableMap<String, Any?>
+    private lateinit var smsStore: MutableMap<String, Any?>
+
+    @Before
+    fun setUp() {
+        clearSingleton()
+        sharedStore = mutableMapOf()
+        deviceStore = mutableMapOf()
+        secretsStore = mutableMapOf()
+        smsStore = mutableMapOf()
+        context = mockContext(sharedStore, deviceStore, secretsStore, smsStore)
+    }
+
+    @After
+    fun tearDown() {
+        clearSingleton()
+    }
+
+    @Test
+    fun taskPromptSettings_readsDefaults() {
+        val configManager = ConfigManager.getInstance(context)
+
+        val settings = configManager.taskPromptSettings
+
+        assertEquals(PortalCloudClient.DEFAULT_MODEL_ID, settings.llmModel)
+        assertEquals(PortalCloudClient.DEFAULT_REASONING, settings.reasoning)
+        assertEquals(PortalCloudClient.DEFAULT_VISION, settings.vision)
+        assertEquals(PortalCloudClient.DEFAULT_MAX_STEPS, settings.maxSteps)
+        assertEquals(PortalCloudClient.DEFAULT_TEMPERATURE, settings.temperature, 0.0)
+        assertEquals(PortalCloudClient.DEFAULT_EXECUTION_TIMEOUT, settings.executionTimeout)
+    }
+
+    @Test
+    fun saveTaskPromptSettings_persistsAllFields() {
+        val initial = ConfigManager.getInstance(context)
+        initial.saveTaskPromptSettings(
+            PortalTaskSettings(
+                llmModel = "openai/gpt-5.2",
+                reasoning = true,
+                vision = true,
+                maxSteps = 444,
+                temperature = 1.25,
+                executionTimeout = 777,
+            ),
+        )
+
+        clearSingleton()
+
+        val restored = ConfigManager.getInstance(context).taskPromptSettings
+
+        assertEquals("openai/gpt-5.2", restored.llmModel)
+        assertEquals(true, restored.reasoning)
+        assertEquals(true, restored.vision)
+        assertEquals(444, restored.maxSteps)
+        assertEquals(1.25, restored.temperature, 0.0)
+        assertEquals(777, restored.executionTimeout)
+        assertFalse(sharedStore.isEmpty())
+    }
+
+    @Test
+    fun keepScreenAwakeEnabled_defaultsToFalse() {
+        val configManager = ConfigManager.getInstance(context)
+
+        assertFalse(configManager.keepScreenAwakeEnabled)
+    }
+
+    @Test
+    fun streamSessionLimit_defaultsToThree() {
+        assertEquals(3, ConfigManager.getInstance(context).streamSessionLimit)
+    }
+
+    @Test
+    fun streamSessionLimit_persistsAcrossProcessRestart() {
+        ConfigManager.getInstance(context).streamSessionLimit = 5
+
+        clearSingleton()
+
+        assertEquals(5, ConfigManager.getInstance(context).streamSessionLimit)
+    }
+
+    @Test
+    fun streamSessionLimit_clampsStoredAndAssignedValuesToRange() {
+        val configManager = ConfigManager.getInstance(context)
+
+        sharedStore["stream_session_limit"] = 42
+        assertEquals(5, configManager.streamSessionLimit)
+        sharedStore["stream_session_limit"] = 0
+        assertEquals(1, configManager.streamSessionLimit)
+
+        configManager.streamSessionLimit = 9
+        assertEquals(5, sharedStore["stream_session_limit"])
+    }
+
+    @Test
+    fun setStreamSessionLimitWithNotification_notifiesListenersWithStoredValue() {
+        val configManager = ConfigManager.getInstance(context)
+        val listener = mockk<ConfigManager.ConfigChangeListener>(relaxed = true)
+        configManager.addListener(listener)
+
+        configManager.setStreamSessionLimitWithNotification(2)
+
+        verify(exactly = 1) { listener.onStreamSessionLimitChanged(2) }
+        assertEquals(2, configManager.streamSessionLimit)
+    }
+
+    @Test
+    fun keepScreenAwakeEnabled_persistsAcrossProcessRestart() {
+        val initial = ConfigManager.getInstance(context)
+        initial.keepScreenAwakeEnabled = true
+
+        clearSingleton()
+
+        assertTrue(ConfigManager.getInstance(context).keepScreenAwakeEnabled)
+    }
+
+    @Test
+    fun noA11yMode_defaultsToFalse() {
+        val configManager = ConfigManager.getInstance(context)
+
+        assertFalse(configManager.noA11yMode)
+    }
+
+    @Test
+    fun noA11yMode_persistsAcrossProcessRestart() {
+        val initial = ConfigManager.getInstance(context)
+        initial.noA11yMode = true
+
+        clearSingleton()
+
+        assertTrue(ConfigManager.getInstance(context).noA11yMode)
+    }
+
+    @Test
+    fun clearKeepAliveRuntimeState_clearsRecoveryMetadata() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.keepAliveLastRecoveryAtMs = 1234L
+        configManager.keepAliveLastRecoveryAttemptAtMs = 1200L
+        configManager.keepAliveConsecutiveRecoveryFailures = 3
+        configManager.keepAliveDegradedReason = "wake_lock_failed"
+        configManager.keepAliveActiveRecoveryToken = 77L
+        configManager.keepAliveRecoveryOwnerSessionId = "session-a"
+        configManager.keepAliveRecoveryActivityInFlight = true
+        configManager.saveKeepAlivePendingRecoveryResult(
+            token = 77L,
+            success = false,
+            reason = "dismiss_cancelled",
+            completedAtMs = 1300L,
+        )
+
+        configManager.clearKeepAliveRuntimeState()
+
+        assertEquals(0L, configManager.keepAliveLastRecoveryAtMs)
+        assertEquals(0L, configManager.keepAliveLastRecoveryAttemptAtMs)
+        assertEquals(0, configManager.keepAliveConsecutiveRecoveryFailures)
+        assertEquals(null, configManager.keepAliveDegradedReason)
+        assertEquals(0L, configManager.keepAliveActiveRecoveryToken)
+        assertEquals(null, configManager.keepAliveRecoveryOwnerSessionId)
+        assertFalse(configManager.keepAliveRecoveryActivityInFlight)
+        assertEquals(0L, configManager.keepAlivePendingRecoveryResultToken)
+        assertFalse(configManager.keepAlivePendingRecoveryResultSuccess)
+        assertEquals(null, configManager.keepAlivePendingRecoveryResultReason)
+        assertEquals(0L, configManager.keepAlivePendingRecoveryResultAtMs)
+    }
+
+    @Test
+    fun nextKeepAliveRecoveryToken_persistsAcrossProcessRestart() {
+        val initial = ConfigManager.getInstance(context)
+
+        assertEquals(1L, initial.nextKeepAliveRecoveryToken())
+        assertEquals(2L, initial.nextKeepAliveRecoveryToken())
+
+        clearSingleton()
+
+        val restored = ConfigManager.getInstance(context)
+        assertEquals(3L, restored.nextKeepAliveRecoveryToken())
+    }
+
+    @Test
+    fun keepAliveRecoveryHandoffState_persistsAcrossProcessRestart() {
+        val initial = ConfigManager.getInstance(context)
+        initial.keepAliveActiveRecoveryToken = 81L
+        initial.keepAliveRecoveryOwnerSessionId = "session-a"
+        initial.keepAliveRecoveryActivityInFlight = true
+        initial.saveKeepAlivePendingRecoveryResult(
+            token = 81L,
+            success = true,
+            reason = null,
+            completedAtMs = 999L,
+        )
+
+        clearSingleton()
+
+        val restored = ConfigManager.getInstance(context)
+        assertEquals(81L, restored.keepAliveActiveRecoveryToken)
+        assertEquals("session-a", restored.keepAliveRecoveryOwnerSessionId)
+        assertTrue(restored.keepAliveRecoveryActivityInFlight)
+        assertEquals(81L, restored.keepAlivePendingRecoveryResultToken)
+        assertTrue(restored.keepAlivePendingRecoveryResultSuccess)
+        assertEquals(null, restored.keepAlivePendingRecoveryResultReason)
+        assertEquals(999L, restored.keepAlivePendingRecoveryResultAtMs)
+    }
+
+    @Test
+    fun taskPromptSettings_prefers_saved_default_model_when_no_explicit_model_exists() {
+        val configManager = ConfigManager.getInstance(context)
+
+        configManager.updateTaskPromptDefaultModel("google/gemini-3-flash")
+        configManager.taskPromptModel = ""
+
+        val settings = configManager.taskPromptSettings
+
+        assertEquals("google/gemini-3-flash", settings.llmModel)
+    }
+
+    @Test
+    fun taskPromptSettings_keeps_explicit_model_over_loaded_default() {
+        val configManager = ConfigManager.getInstance(context)
+
+        configManager.updateTaskPromptDefaultModel("google/gemini-3-flash")
+        configManager.taskPromptModel = "openai/gpt-5.4"
+
+        val settings = configManager.taskPromptSettings
+
+        assertEquals("openai/gpt-5.4", settings.llmModel)
+    }
+
+    @Test
+    fun taskPromptReturnToPortal_persistsSelection() {
+        val initial = ConfigManager.getInstance(context)
+        initial.taskPromptReturnToPortal = true
+
+        clearSingleton()
+
+        assertEquals(true, ConfigManager.getInstance(context).taskPromptReturnToPortal)
+    }
+
+    @Test
+    fun activePortalTask_persistsAndRestoresRecord() {
+        val initial = ConfigManager.getInstance(context)
+        initial.saveActivePortalTask(
+            PortalActiveTaskRecord(
+                taskId = "task-123",
+                promptPreview = "Open the camera app",
+                startedAtMs = 123456789L,
+                executionTimeoutSec = 900,
+                pollDeadlineMs = 123457689L,
+                lastStatus = PortalTaskTracking.STATUS_RUNNING,
+                startedToastShown = true,
+                terminalToastShown = true,
+                triggerRuleId = "rule-42",
+                returnToPortalOnTerminal = true,
+                terminalReturnHandled = true,
+                terminalTransitionHandled = true,
+            ),
+        )
+
+        clearSingleton()
+
+        val restored = ConfigManager.getInstance(context).activePortalTask
+
+        requireNotNull(restored)
+        assertEquals("task-123", restored.taskId)
+        assertEquals("Open the camera app", restored.promptPreview)
+        assertEquals(123456789L, restored.startedAtMs)
+        assertEquals(900, restored.executionTimeoutSec)
+        assertEquals(123457689L, restored.pollDeadlineMs)
+        assertEquals(PortalTaskTracking.STATUS_RUNNING, restored.lastStatus)
+        assertEquals(true, restored.startedToastShown)
+        assertEquals(true, restored.terminalToastShown)
+        assertEquals("rule-42", restored.triggerRuleId)
+        assertEquals(true, restored.returnToPortalOnTerminal)
+        assertEquals(true, restored.terminalReturnHandled)
+        assertEquals(true, restored.terminalTransitionHandled)
+    }
+
+    @Test
+    fun secretPrefs_migrateLegacyValuesOutOfMainConfigStore() {
+        sharedStore["auth_token"] = "legacy-auth"
+        sharedStore["reverse_connection_token"] = "legacy-reverse-token"
+        sharedStore["reverse_connection_service_key"] = "legacy-service-key"
+
+        val configManager = ConfigManager.getInstance(context)
+
+        assertEquals("legacy-auth", configManager.authToken)
+        assertEquals("legacy-reverse-token", configManager.reverseConnectionToken)
+        assertEquals("legacy-service-key", configManager.reverseConnectionServiceKey)
+        assertEquals("legacy-auth", secretsStore["auth_token"])
+        assertEquals("legacy-reverse-token", secretsStore["reverse_connection_token"])
+        assertEquals("legacy-service-key", secretsStore["reverse_connection_service_key"])
+        assertFalse(sharedStore.containsKey("auth_token"))
+        assertFalse(sharedStore.containsKey("reverse_connection_token"))
+        assertFalse(sharedStore.containsKey("reverse_connection_service_key"))
+    }
+
+    @Test
+    fun reverseConnectionToken_normalizesLiteralNullFromLocalPrefs() {
+        secretsStore["reverse_connection_token"] = "null"
+
+        val token = ConfigManager.getInstance(context).reverseConnectionToken
+
+        assertEquals("", token)
+    }
+
+    @Test
+    fun reverseConnectionToken_setterNormalizesBlankAndLiteralNull() {
+        val configManager = ConfigManager.getInstance(context)
+
+        configManager.reverseConnectionToken = "  null  "
+
+        assertEquals("", configManager.reverseConnectionToken)
+        assertEquals("", secretsStore["reverse_connection_token"])
+
+        configManager.reverseConnectionToken = "  real-token  "
+
+        assertEquals("real-token", configManager.reverseConnectionToken)
+        assertEquals("real-token", secretsStore["reverse_connection_token"])
+    }
+
+    @Test
+    fun reverseJoinBlockedByHttp402_persistsInBackupExcludedDeviceStore() {
+        val configManager = ConfigManager.getInstance(context)
+
+        assertFalse(configManager.reverseJoinBlockedByHttp402)
+
+        configManager.reverseJoinBlockedByHttp402 = true
+        clearSingleton()
+
+        assertTrue(ConfigManager.getInstance(context).reverseJoinBlockedByHttp402)
+        assertEquals(true, deviceStore["reverse_join_blocked_by_http_402"])
+        assertFalse(sharedStore.containsKey("reverse_join_blocked_by_http_402"))
+        assertFalse(secretsStore.containsKey("reverse_join_blocked_by_http_402"))
+    }
+
+    @Test
+    fun explicitDisconnectPreservesHttp402BlockAndDisconnectedPresentationAcrossRestart() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.reverseJoinBlockedByHttp402 = true
+
+        configManager.markReverseJoinExplicitlyDisconnected()
+
+        assertEquals(
+            ReverseJoinHttp402Snapshot(
+                blocked = true,
+                explicitlyDisconnected = true,
+            ),
+            configManager.reverseJoinHttp402Snapshot(),
+        )
+        assertEquals(
+            true,
+            deviceStore["reverse_join_disconnected_while_http_402_blocked"],
+        )
+
+        clearSingleton()
+        val restored = ConfigManager.getInstance(context)
+
+        assertEquals(
+            ReverseJoinHttp402Snapshot(
+                blocked = true,
+                explicitlyDisconnected = true,
+            ),
+            restored.reverseJoinHttp402Snapshot(),
+        )
+
+        // A late duplicate close from the same blocked attempt must not undo an explicit disconnect.
+        restored.reverseJoinBlockedByHttp402 = true
+        assertEquals(
+            ReverseJoinHttp402Snapshot(
+                blocked = true,
+                explicitlyDisconnected = true,
+            ),
+            restored.reverseJoinHttp402Snapshot(),
+        )
+
+        // A future explicit reconnect clears both persisted values before its one-shot attempt.
+        restored.reverseJoinBlockedByHttp402 = false
+        assertEquals(
+            ReverseJoinHttp402Snapshot(
+                blocked = false,
+                explicitlyDisconnected = false,
+            ),
+            restored.reverseJoinHttp402Snapshot(),
+        )
+    }
+
+    @Test
+    fun unchangedConnectionConfigDoesNotClearHttp402Block() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.reverseConnectionToken = "token"
+        configManager.reverseConnectionServiceKey = "service-key"
+        configManager.reverseJoinBlockedByHttp402 = true
+
+        configManager.reverseConnectionUrl = configManager.defaultReverseConnectionUrl
+        configManager.reverseConnectionToken = " token "
+        configManager.reverseConnectionServiceKey = "service-key"
+
+        assertTrue(configManager.reverseJoinBlockedByHttp402)
+    }
+
+    @Test
+    fun changedEndpointOrCredentialsClearHttp402BlockWhileConnectionIsDisabled() {
+        val configManager = ConfigManager.getInstance(context)
+        assertFalse(configManager.reverseConnectionEnabled)
+
+        configManager.reverseJoinBlockedByHttp402 = true
+        configManager.reverseConnectionUrl =
+            "wss://example.test/v1/providers/personal/join"
+        assertFalse(configManager.reverseJoinBlockedByHttp402)
+
+        configManager.reverseJoinBlockedByHttp402 = true
+        configManager.reverseConnectionToken = "new-token"
+        assertFalse(configManager.reverseJoinBlockedByHttp402)
+
+        configManager.reverseJoinBlockedByHttp402 = true
+        configManager.reverseConnectionServiceKey = "new-service-key"
+        assertFalse(configManager.reverseJoinBlockedByHttp402)
+    }
+
+    @Test
+    fun storeCloudSession_marksTheTokenAsASessionOnTheOfficialCloud() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.reverseConnectionUrl = "wss://example.test/v1/providers/personal/join"
+
+        configManager.storeCloudSession("session-token", nowMs = 42L)
+
+        assertTrue(configManager.cloudSessionActive)
+        assertEquals("session-token", configManager.reverseConnectionToken)
+        assertEquals(42L, configManager.cloudSessionCheckedAtMs)
+        assertEquals(configManager.defaultReverseConnectionUrl, configManager.reverseConnectionUrlOrDefault)
+    }
+
+    @Test
+    fun replacingTheTokenEndsTheSessionMarker() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.storeCloudSession("session-token", nowMs = 42L)
+
+        configManager.reverseConnectionToken = "dr_sk_api_key"
+
+        assertFalse(configManager.cloudSessionActive)
+        assertEquals(0L, configManager.cloudSessionCheckedAtMs)
+    }
+
+    @Test
+    fun sessionIsDroppedWhenTheUrlLeavesTheOfficialCloud() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.storeCloudSession("session-token")
+
+        configManager.reverseConnectionUrl = configManager.defaultReverseConnectionUrl
+        assertTrue(configManager.cloudSessionActive)
+
+        configManager.reverseConnectionUrl = "wss://self-hosted.example/v1/providers/personal/join"
+        assertFalse(configManager.cloudSessionActive)
+        assertEquals("", configManager.reverseConnectionToken)
+    }
+
+    @Test
+    fun sessionIsDroppedOnCleartextWs() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.storeCloudSession("session-token")
+
+        configManager.reverseConnectionUrl = "ws://api.mobilerun.ai/v1/providers/personal/join"
+
+        assertFalse(configManager.cloudSessionActive)
+        assertFalse(configManager.isOfficialCloudUrl("ws://api.mobilerun.ai/v1/providers/personal/join"))
+        assertTrue(configManager.isOfficialCloudUrl(configManager.defaultReverseConnectionUrl))
+    }
+
+    @Test
+    fun replacedOrDroppedSessionsAreHandedToTheRevokeHook() {
+        val configManager = ConfigManager.getInstance(context)
+        val revoked = mutableListOf<String>()
+        configManager.onCloudSessionDropped = { revoked += it }
+
+        configManager.storeCloudSession("first")
+        configManager.storeCloudSession("second")
+        configManager.reverseConnectionToken = "dr_sk_api_key"
+        configManager.reverseConnectionToken = "dr_sk_other_key"
+
+        assertEquals(listOf("first", "second"), revoked)
+    }
+
+    @Test
+    fun apiKeysSurviveACustomUrl() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.reverseConnectionToken = "dr_sk_api_key"
+
+        configManager.reverseConnectionUrl = "wss://self-hosted.example/v1/providers/personal/join"
+
+        assertEquals("dr_sk_api_key", configManager.reverseConnectionToken)
+    }
+
+    @Test
+    fun clearCloudSessionIfCurrent_onlyClearsTheCheckedSession() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.storeCloudSession("new-session")
+
+        assertFalse(configManager.clearCloudSessionIfCurrent("old-session"))
+        assertTrue(configManager.cloudSessionActive)
+
+        assertTrue(configManager.clearCloudSessionIfCurrent("new-session"))
+        assertFalse(configManager.cloudSessionActive)
+        assertEquals("", configManager.reverseConnectionToken)
+
+        configManager.reverseConnectionToken = "dr_sk_api_key"
+        assertFalse(configManager.clearCloudSessionIfCurrent("dr_sk_api_key"))
+        assertEquals("dr_sk_api_key", configManager.reverseConnectionToken)
+    }
+
+    @Test
+    fun clearCloudCredentials_preservesLocalApiToken() {
+        sharedStore["overlay_visible"] = false
+        sharedStore["socket_server_enabled"] = true
+        sharedStore["device_id"] = "legacy-device-123"
+        deviceStore["device_id"] = "device-123"
+        secretsStore["auth_token"] = "auth-123"
+        secretsStore["reverse_connection_token"] = "reverse-123"
+        secretsStore["reverse_connection_service_key"] = "service-123"
+        secretsStore["reverse_connection_credential_type"] = "session"
+        deviceStore["reverse_join_blocked_by_http_402"] = true
+
+        ConfigManager.getInstance(context).clearCloudCredentials()
+
+        assertTrue(deviceStore.isEmpty())
+        assertEquals("auth-123", secretsStore["auth_token"])
+        assertFalse(secretsStore.containsKey("reverse_connection_token"))
+        assertFalse(secretsStore.containsKey("reverse_connection_service_key"))
+        assertFalse(secretsStore.containsKey("reverse_connection_credential_type"))
+        assertEquals(false, sharedStore["overlay_visible"])
+        assertEquals(true, sharedStore["socket_server_enabled"])
+        assertFalse(sharedStore.containsKey("device_id"))
+    }
+
+    @Test
+    fun resetToDefaults_clearsCredentialsAndRestoresDefaults() {
+        sharedStore["overlay_visible"] = false
+        sharedStore["overlay_offset"] = 42
+        sharedStore["socket_server_enabled"] = true
+        sharedStore["socket_server_port"] = 9999
+        sharedStore["websocket_enabled"] = true
+        sharedStore["websocket_port"] = 9998
+        sharedStore["reverse_connection_enabled"] = true
+        sharedStore["production_mode"] = true
+        sharedStore["sms_gateway_enabled"] = true
+        deviceStore["device_id"] = "device-123"
+        deviceStore["reverse_join_blocked_by_http_402"] = true
+        deviceStore["reconnect_after_restart_enabled"] = true
+        deviceStore["reverse_connection_was_enabled"] = true
+        secretsStore["auth_token"] = "auth-123"
+        secretsStore["reverse_connection_token"] = "reverse-123"
+        secretsStore["reverse_connection_service_key"] = "service-123"
+
+        val configManager = ConfigManager.getInstance(context)
+        configManager.resetToDefaults()
+
+        assertTrue(deviceStore.isEmpty())
+        assertTrue(secretsStore.isEmpty())
+        assertFalse(configManager.overlayVisible)
+        assertEquals(0, configManager.overlayOffset)
+        assertFalse(configManager.socketServerEnabled)
+        assertEquals(8080, configManager.socketServerPort)
+        assertFalse(configManager.websocketEnabled)
+        assertEquals(8081, configManager.websocketPort)
+        assertFalse(configManager.reverseConnectionEnabled)
+        assertFalse(configManager.reverseJoinBlockedByHttp402)
+        assertFalse(configManager.productionMode)
+        assertFalse(configManager.smsGatewayEnabled)
+        assertFalse(configManager.reconnectAfterRestartEnabled)
+        assertFalse(configManager.reverseConnectionWasEnabled)
+    }
+
+    @Test
+    fun smsGatewayEnabled_defaultsOffAndPersists() {
+        assertFalse(ConfigManager.getInstance(context).smsGatewayEnabled)
+
+        ConfigManager.getInstance(context).smsGatewayEnabled = true
+        clearSingleton()
+
+        assertTrue(ConfigManager.getInstance(context).smsGatewayEnabled)
+        assertEquals(true, smsStore["sms_gateway_enabled"])
+        assertFalse(sharedStore.containsKey("sms_gateway_enabled"))
+    }
+
+    @Test
+    fun reverseConnectionEnabled_startsOffInNewProcessButIsRememberedForRestarts() {
+        ConfigManager.getInstance(context).reverseConnectionEnabled = true
+        clearSingleton()
+
+        val configManager = ConfigManager.getInstance(context)
+        assertFalse(configManager.reverseConnectionEnabled)
+        assertTrue(configManager.reverseConnectionWasEnabled)
+        assertEquals(true, deviceStore["reverse_connection_was_enabled"])
+
+        configManager.reverseConnectionEnabled = false
+        assertFalse(configManager.reverseConnectionWasEnabled)
+    }
+
+    @Test
+    fun clearReverseConnectionWasEnabled_stopsRestartsButKeepsTheRuntimeFlag() {
+        val configManager = ConfigManager.getInstance(context)
+        configManager.reverseConnectionEnabled = true
+
+        configManager.clearReverseConnectionWasEnabled()
+
+        assertTrue(configManager.reverseConnectionEnabled)
+        assertFalse(configManager.reverseConnectionWasEnabled)
+    }
+
+    @Test
+    fun reconnectAfterRestart_defaultsOffPersistsInDevicePrefsAndClearsOnSignOut() {
+        val configManager = ConfigManager.getInstance(context)
+        assertFalse(configManager.reconnectAfterRestartEnabled)
+
+        configManager.reconnectAfterRestartEnabled = true
+        clearSingleton()
+
+        assertTrue(ConfigManager.getInstance(context).reconnectAfterRestartEnabled)
+        assertEquals(true, deviceStore["reconnect_after_restart_enabled"])
+        assertFalse(sharedStore.containsKey("reconnect_after_restart_enabled"))
+
+        ConfigManager.getInstance(context).clearCloudCredentials()
+        assertFalse(ConfigManager.getInstance(context).reconnectAfterRestartEnabled)
+    }
+
+    @Test
+    fun hasCloudCredentials_acceptsTokenOrServiceKey() {
+        val configManager = ConfigManager.getInstance(context)
+        assertFalse(configManager.hasCloudCredentials)
+
+        secretsStore["reverse_connection_service_key"] = "service-key"
+        assertTrue(configManager.hasCloudCredentials)
+
+        secretsStore.remove("reverse_connection_service_key")
+        secretsStore["reverse_connection_token"] = "token"
+        assertTrue(configManager.hasCloudCredentials)
+    }
+
+    private fun mockContext(
+        sharedPrefsStore: MutableMap<String, Any?>,
+        devicePrefsStore: MutableMap<String, Any?>,
+        secretsPrefsStore: MutableMap<String, Any?>,
+        smsPrefsStore: MutableMap<String, Any?>,
+    ): Context {
+        val context = mockk<Context>(relaxed = true)
+        val sharedPrefs = mockPreferences(sharedPrefsStore)
+        val devicePrefs = mockPreferences(devicePrefsStore)
+        val secretsPrefs = mockPreferences(secretsPrefsStore)
+        val smsPrefs = mockPreferences(smsPrefsStore)
+
+        every { context.applicationContext } returns context
+        every {
+            context.getSharedPreferences("mobilerun_config", Context.MODE_PRIVATE)
+        } returns sharedPrefs
+        every {
+            context.getSharedPreferences("mobilerun_device", Context.MODE_PRIVATE)
+        } returns devicePrefs
+        every {
+            context.getSharedPreferences("mobilerun_secrets", Context.MODE_PRIVATE)
+        } returns secretsPrefs
+        every {
+            context.getSharedPreferences("mobilerun_sms", Context.MODE_PRIVATE)
+        } returns smsPrefs
+
+        return context
+    }
+
+    private fun mockPreferences(store: MutableMap<String, Any?>): SharedPreferences {
+        val prefs = mockk<SharedPreferences>()
+        val editor = mockk<SharedPreferences.Editor>()
+
+        every { prefs.contains(any()) } answers { store.containsKey(firstArg()) }
+        every { prefs.getString(any(), any()) } answers {
+            store[firstArg<String>()] as? String ?: secondArg<String?>()
+        }
+        every { prefs.getBoolean(any(), any()) } answers {
+            store[firstArg<String>()] as? Boolean ?: secondArg<Boolean>()
+        }
+        every { prefs.getInt(any(), any()) } answers {
+            store[firstArg<String>()] as? Int ?: secondArg<Int>()
+        }
+        every { prefs.getLong(any(), any()) } answers {
+            store[firstArg<String>()] as? Long ?: secondArg<Long>()
+        }
+        every { prefs.getFloat(any(), any()) } answers {
+            store[firstArg<String>()] as? Float ?: secondArg<Float>()
+        }
+        every { prefs.edit() } returns editor
+
+        every { editor.putString(any(), any()) } answers {
+            store[firstArg()] = secondArg<String?>()
+            editor
+        }
+        every { editor.putBoolean(any(), any()) } answers {
+            store[firstArg()] = secondArg<Boolean>()
+            editor
+        }
+        every { editor.putInt(any(), any()) } answers {
+            store[firstArg()] = secondArg<Int>()
+            editor
+        }
+        every { editor.putLong(any(), any()) } answers {
+            store[firstArg()] = secondArg<Long>()
+            editor
+        }
+        every { editor.putFloat(any(), any()) } answers {
+            store[firstArg()] = secondArg<Float>()
+            editor
+        }
+        every { editor.remove(any()) } answers {
+            store.remove(firstArg<String>())
+            editor
+        }
+        every { editor.clear() } answers {
+            store.clear()
+            editor
+        }
+        every { editor.apply() } just Runs
+        every { editor.commit() } returns true
+
+        return prefs
+    }
+
+    private fun clearSingleton() {
+        val owners = listOf(ConfigManager::class.java, ConfigManager.Companion::class.java)
+        for (owner in owners) {
+            val field = owner.declaredFields.firstOrNull { it.name == "INSTANCE" } ?: continue
+            field.isAccessible = true
+            val receiver = if (Modifier.isStatic(field.modifiers)) null else ConfigManager.Companion
+            field.set(receiver, null)
+            return
+        }
+        error("ConfigManager INSTANCE field not found")
+    }
+}

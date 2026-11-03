@@ -1,0 +1,9 @@
+app: taobao
+name: 淘宝
+package: com.taobao.taobao
+launch_wait: 8.0
+window: 09:00-13:00
+verify_any:
+- 已签到
+- 已领取
+- 今日已签

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mobilerun Portal Diagnostic</string>
+    <string name="keyboard_name">Mobilerun Diagnostic Keyboard</string>
+    <string name="accessibility_service_description">Isolated Mobilerun Portal diagnostic service for offline-built accessibility inspection.</string>
+</resources>

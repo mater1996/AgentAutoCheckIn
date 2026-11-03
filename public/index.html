@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>签到资产面板</title>
+<script src="/echarts.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --card2:#1e222b; --line:#262b36;
+    --fg:#e6e9ef; --dim:#8b93a7; --accent:#4c8dff; --ok:#35c07a; --warn:#e0b400; --bad:#e5534b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font:14px/1.6 -apple-system,"PingFang SC","Helvetica Neue",sans-serif}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+  header{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+  h1{font-size:19px;margin:0;font-weight:600;letter-spacing:-.2px}
+  .sub{color:var(--dim);font-size:12px}
+  .total{margin-left:auto;font-size:13px;color:var(--dim)}
+  .total b{color:var(--ok);font-size:20px;font-weight:600;margin-left:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:26px}
+  .coststrip{display:flex;flex-wrap:wrap;gap:18px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:10px 16px;margin-bottom:18px;font-size:12px;color:var(--dim)}
+  .coststrip b{color:var(--fg);font-weight:600;font-size:13px;margin-left:5px}
+  .coststrip .sep{width:1px;background:var(--line);align-self:stretch}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .card .name{font-size:12px;color:var(--dim);display:flex;justify-content:space-between}
+  .card .val{font-size:26px;font-weight:600;margin:8px 0 2px;letter-spacing:-.5px}
+  .card .val span{font-size:13px;color:var(--dim);font-weight:400;margin-left:4px}
+  .card .cny{color:var(--accent);font-size:13px}
+  .card .meta{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim)}
+  .up{color:var(--ok)} .down{color:var(--bad)} .flat{color:var(--dim)}
+  h2{font-size:13px;color:var(--dim);font-weight:500;margin:28px 0 12px;letter-spacing:.4px}
+  #chart{height:300px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px}
+  #pnlchart{height:320px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;margin-bottom:14px}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;color:var(--dim);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #1c2029;vertical-align:top}
+  tr:hover td{background:#14181f}
+  .pill{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:500}
+  .p-OK{background:rgba(53,192,122,.15);color:var(--ok)}
+  .p-ALREADY{background:rgba(76,141,255,.15);color:var(--accent)}
+  .p-ERROR,.p-NO_EFFECT,.p-INVALID_READ{background:rgba(229,83,75,.15);color:var(--bad)}
+  .p-INVALID_READ{background:rgba(139,147,167,.15);color:var(--dim)}
+  .p-NEEDS_LOGIN,.p-NEEDS_HUMAN{background:rgba(224,180,0,.15);color:var(--warn)}
+  .mono{font-family:"SF Mono",Menlo,monospace;font-size:11.5px;color:var(--dim)}
+  .err{color:var(--bad);font-size:11px;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+  .empty{color:var(--dim);padding:20px 0;text-align:center}
+  .small{font-size:11px;color:var(--dim);line-height:1.5}
+  .tag{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10.5px;border:1px solid currentColor}
+  .tag.up{color:#3ddc97}.tag.flat{color:#e8c07d}.tag.down{color:#e8636a}
+  a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>签到资产面板</h1>
+    <span class="sub" id="ts"></span>
+    <span class="total">合计账面价值<b id="total">¥0.00</b></span>
+  </header>
+
+  <div class="coststrip" id="cost"></div>
+
+  <h2>收益 · 成本 · 净收益</h2>
+  <div class="grid" id="pnl"></div>
+
+  <h2>每日收益 vs 成本</h2>
+  <div id="pnlchart"></div>
+  <table><thead><tr>
+    <th>日期</th><th>收益</th><th>成本(Tokens)</th><th>成本(¥)</th><th>净收益</th><th>成功</th><th>已签</th><th>异常</th><th>调用</th>
+  </tr></thead><tbody id="daily"></tbody></table>
+
+  <h2>账号 · App 细分</h2>
+  <table><thead><tr>
+    <th>App</th><th>账号</th><th>活动</th><th>资产</th><th>累计收益</th><th>折算</th><th>成本</th><th>净</th>
+    <th>次数</th><th>成功/已签/异常</th><th>最近状态</th><th>最近日期</th>
+  </tr></thead><tbody id="breakdown"></tbody></table>
+
+  <div class="grid" id="cards"></div>
+
+  <h2>资产存量曲线</h2>
+  <div id="chart"></div>
+
+  <h2>活动状态</h2>
+  <table><thead><tr>
+    <th>活动</th><th>账号</th><th>时间窗</th><th>最近状态</th><th>最近执行</th><th>耗时</th><th>最近错误</th>
+  </tr></thead><tbody id="acts"></tbody></table>
+
+  <h2>步骤级耗时 · Token 明细</h2>
+  <div class="grid" id="stepsummary"></div>
+  <div id="stepchart"></div>
+  <table><thead><tr>
+    <th>#</th><th>阶段</th><th>动作</th><th>详情</th><th>开始</th><th>耗时</th><th>Tokens</th><th>调用</th><th>结果</th>
+  </tr></thead><tbody id="steps"></tbody></table>
+
+  <h2>经验进化 · 任务模板</h2>
+  <div class="grid" id="learnsummary"></div>
+  <table><thead><tr>
+    <th>类型</th><th>动作序列</th><th>不变量</th><th>失败模式</th><th>可信度</th><th>来源</th>
+  </tr></thead><tbody id="templates"></tbody></table>
+
+  <h2>预测执行（拿任务列表直接推演）</h2>
+  <table><thead><tr>
+    <th>任务</th><th>类型</th><th>次数</th><th>推演步骤</th><th>可信度</th><th>状态</th>
+  </tr></thead><tbody id="prediction"></tbody></table>
+
+  <h2>观测记录（L1 实例）</h2>
+  <table><thead><tr>
+    <th>任务/指令</th><th>类型</th><th>动作数</th><th>重试</th><th>观测时间</th>
+  </tr></thead><tbody id="recipes"></tbody></table>
+
+  <h2>执行记录</h2>
+  <table><thead><tr>
+    <th>#</th><th>日期</th><th>活动</th><th>状态</th><th>余额变化</th><th>Prep</th><th>执行</th><th>Tokens</th><th>调用</th>
+  </tr></thead><tbody id="runs"></tbody></table>
+</div>
+
+<script>
+const fmt = n => n == null ? '-' : n.toLocaleString('zh-CN');
+const money = n => n == null ? '-' : '¥' + Number(n).toFixed(2);
+const secs = ms => ms == null ? '-' : (ms/1000).toFixed(1) + 's';
+const cls = d => d == null ? 'flat' : d > 0 ? 'up' : d < 0 ? 'down' : 'flat';
+const sign = d => d == null ? '' : (d > 0 ? '+' : '') + d;
+
+async function load(){
+  const [ov, tr, ac, rs, dl, bd, ln] = await Promise.all([
+    fetch('/api/overview').then(r=>r.json()),
+    fetch('/api/trend?days=30').then(r=>r.json()),
+    fetch('/api/activities').then(r=>r.json()),
+    fetch('/api/runs?limit=25').then(r=>r.json()),
+    fetch('/api/daily?days=30').then(r=>r.json()),
+    fetch('/api/breakdown').then(r=>r.json()),
+    fetch('/api/learning').then(r=>r.json()).catch(()=>({})),
+  ]);
+
+  document.getElementById('ts').textContent = '更新于 ' + new Date(ov.generatedAt).toLocaleString('zh-CN');
+  document.getElementById('total').textContent = money(ov.totalCny);
+
+  // 成本条
+  const c = ov.cost || { today: {}, allTime: {}, byIntent: {}, perMTok: 0 };
+  const intent = Object.entries(c.byIntent || {})
+    .filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => `${k} ${fmt(v)}`)
+    .join(' · ');
+  document.getElementById('cost').innerHTML = `
+    <span>今日 Tokens<b>${fmt(c.today.tokens)}</b></span>
+    <span>今日调用<b>${fmt(c.today.calls)}</b></span>
+    <span>折算<b>¥${(c.today.cny ?? 0).toFixed(4)}</b></span>
+    <span class="sep"></span>
+    <span>累计 Tokens<b>${fmt(c.allTime.tokens)}</b></span>
+    <span>累计折算<b>¥${(c.allTime.cny ?? 0).toFixed(2)}</b></span>
+    <span class="sep"></span>
+    <span style="opacity:.7">按 ¥${c.perMTok}/百万 tokens 参考价；订阅通道实际按量计费为 ¥0</span>
+    ${intent ? `<span class="sep"></span><span style="opacity:.85">今日分布：${intent}</span>` : ''}
+  `;
+
+  // ===== 收益 / 成本 / 净收益 =====
+  const T = dl.total || {};
+  const pnlCard = (label, val, sub, color) => `
+    <div class="card">
+      <div class="name"><span>${label}</span></div>
+      <div class="val" style="color:${color || 'var(--fg)'}">${val}</div>
+      <div class="cny" style="color:var(--dim)">${sub || ''}</div>
+    </div>`;
+  document.getElementById('pnl').innerHTML = [
+    pnlCard('累计收益（账面）', money(T.gainCny), `按余额差 × 汇率，非现金`, 'var(--ok)'),
+    pnlCard('累计成本（参考价）', '¥' + Number(T.costCny || 0).toFixed(4),
+            `${fmt(T.costTokens || 0)} tokens · ${fmt(T.calls || 0)} 次调用`, 'var(--warn)'),
+    pnlCard('累计净收益', money(T.netCny),
+            T.netCny > 0 ? '赚的覆盖了算力成本' : '注意：收益未覆盖成本', T.netCny >= 0 ? 'var(--ok)' : 'var(--bad)'),
+    pnlCard('统计天数', (dl.days || []).length + ' 天', `${(dl.days || []).reduce((s,d)=>s+d.runs,0)} 次执行`, 'var(--accent)'),
+  ].join('');
+
+  // ===== 每日收益 vs 成本 图 =====
+  const pc = echarts.init(document.getElementById('pnlchart'), null, {renderer:'canvas'});
+  const days = (dl.days || []).map(d => d.day.slice(5));
+  pc.setOption({
+    backgroundColor:'transparent',
+    grid:{left:56,right:56,top:40,bottom:36},
+    tooltip:{trigger:'axis',backgroundColor:'#1e222b',borderColor:'#262b36',textStyle:{color:'#e6e9ef',fontSize:12}},
+    legend:{textStyle:{color:'#8b93a7',fontSize:11},top:0,icon:'roundRect',itemWidth:10,itemHeight:10},
+    xAxis:{type:'category',data:days,axisLine:{lineStyle:{color:'#262b36'}},axisLabel:{color:'#8b93a7',fontSize:10}},
+    yAxis:[
+      {type:'value',name:'¥',nameTextStyle:{color:'#8b93a7',fontSize:10},splitLine:{lineStyle:{color:'#1c2029'}},
+       axisLabel:{color:'#8b93a7',fontSize:10}},
+      {type:'value',name:'tokens',nameTextStyle:{color:'#8b93a7',fontSize:10},splitLine:{show:false},
+       axisLabel:{color:'#8b93a7',fontSize:10}},
+    ],
+    series:[
+      {name:'收益 ¥', type:'bar', data:(dl.days||[]).map(d=>d.gainCny), itemStyle:{color:'#35c07a'}, barMaxWidth:26},
+      {name:'成本 ¥', type:'bar', data:(dl.days||[]).map(d=>d.costCny), itemStyle:{color:'#e0b400'}, barMaxWidth:26},
+      {name:'净收益 ¥', type:'line', smooth:true, symbolSize:6, data:(dl.days||[]).map(d=>d.netCny),
+       itemStyle:{color:'#4c8dff'}, lineStyle:{width:2}},
+      {name:'tokens', type:'line', yAxisIndex:1, smooth:true, symbolSize:4,
+       data:(dl.days||[]).map(d=>d.costTokens), itemStyle:{color:'#8b93a7'}, lineStyle:{width:1,type:'dashed'}},
+    ],
+  });
+  if(!(dl.days||[]).length){
+    pc.setOption({graphic:{type:'text',left:'center',top:'middle',
+      style:{text:'还没有收益/成本数据',fill:'#8b93a7',fontSize:13}}});
+  }
+  window.addEventListener('resize', () => pc.resize());
+
+  // ===== 每日收益 vs 成本 表 =====
+  document.getElementById('daily').innerHTML = (dl.days||[]).length
+    ? (dl.days||[]).slice().reverse().map(d => `
+      <tr>
+        <td class="mono">${d.day}</td>
+        <td class="${cls(d.gainCny)}">${money(d.gainCny)}</td>
+        <td class="mono">${fmt(d.costTokens)}</td>
+        <td class="mono">¥${Number(d.costCny).toFixed(4)}</td>
+        <td class="${cls(d.netCny)}">${money(d.netCny)}</td>
+        <td class="mono">${d.ok}</td>
+        <td class="mono">${d.already}</td>
+        <td class="mono" style="${d.bad?'color:var(--bad)':''}">${d.bad}</td>
+        <td class="mono">${d.calls}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="9" class="empty">还没有数据</td></tr>';
+
+  // ===== 账号 · App 细分 =====
+  document.getElementById('bdhint') && (document.getElementById('bdhint').textContent = '');
+  document.getElementById('breakdown').innerHTML = (bd||[]).length
+    ? (bd||[]).map(b => `
+      <tr>
+        <td><b>${b.app || '-'}</b></td>
+        <td>${b.accountId}${b.accountOn ? '' : ' <span class="pill p-INVALID_READ">停用</span>'}
+            ${b.accountNote ? `<div class="mono">${b.accountNote}</div>` : ''}</td>
+        <td>${b.activityName || b.activityId}</td>
+        <td>${b.assetName || '-'}</td>
+        <td class="${b.gainUnits>0?'up':''}">${sign(b.gainUnits)} ${b.unit || ''}</td>
+        <td class="up">${money(b.cny)}</td>
+        <td class="mono">¥${Number(b.costCny).toFixed(4)}</td>
+        <td class="${cls(b.netCny)}">${money(b.netCny)}</td>
+        <td class="mono">${b.runs}</td>
+        <td class="mono"><span class="up">${b.ok}</span>/<span style="color:var(--accent)">${b.already}</span>/<span style="color:var(--bad)">${b.bad}</span></td>
+        <td>${b.lastStatus ? `<span class="pill p-${b.lastStatus}">${b.lastStatus}</span>` : '-'}</td>
+        <td class="mono">${b.lastDay || '-'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="12" class="empty">还没有执行记录</td></tr>';
+
+  const cards = document.getElementById('cards');
+  const withData = ov.assets.filter(a => a.current != null);
+  const noData = ov.assets.filter(a => a.current == null);
+  cards.innerHTML = [...withData, ...noData].map(a => `
+    <div class="card">
+      <div class="name"><span>${a.name}</span><span>${a.platform}</span></div>
+      <div class="val">${fmt(a.current)}<span>${a.unit}</span></div>
+      <div class="cny">${a.cny == null ? '待读数' : money(a.cny)}${a.expiryDays ? ` · ${a.expiryDays}天过期` : ''}</div>
+      <div class="meta">
+        <span class="${cls(a.todayDelta)}">今日 ${sign(a.todayDelta)}</span>
+        <span class="${cls(a.weekDelta)}">7日 ${sign(a.weekDelta)}</span>
+        <span>${a.readings} 次读数</span>
+      </div>
+    </div>`).join('');
+
+  // 曲线
+  const chart = echarts.init(document.getElementById('chart'), null, {renderer:'canvas'});
+  const series = Object.keys(tr.series).map(id => {
+    const a = ov.assets.find(x => x.id === id);
+    return {
+      name: a ? a.name : id, type:'line', smooth:true, symbol:'circle', symbolSize:5,
+      data: tr.days.map(d => tr.series[id][d] ?? null), connectNulls:true,
+      lineStyle:{width:2},
+    };
+  });
+  chart.setOption({
+    backgroundColor:'transparent',
+    grid:{left:52,right:24,top:36,bottom:36},
+    tooltip:{trigger:'axis',backgroundColor:'#1e222b',borderColor:'#262b36',textStyle:{color:'#e6e9ef',fontSize:12}},
+    legend:{textStyle:{color:'#8b93a7',fontSize:11},top:0,icon:'roundRect',itemWidth:10,itemHeight:10},
+    xAxis:{type:'category',data:tr.days,boundaryGap:false,
+      axisLine:{lineStyle:{color:'#262b36'}},axisLabel:{color:'#8b93a7',fontSize:10}},
+    yAxis:{type:'value',scale:true,splitLine:{lineStyle:{color:'#1c2029'}},
+      axisLabel:{color:'#8b93a7',fontSize:10}},
+    series: series.length ? series : [{type:'line',data:[]}],
+  });
+  if(!tr.days.length){
+    chart.setOption({graphic:{type:'text',left:'center',top:'middle',
+      style:{text:'还没有快照数据，跑一次签到就有了',fill:'#8b93a7',fontSize:13}}});
+  }
+  window.addEventListener('resize', () => chart.resize());
+
+  document.getElementById('acts').innerHTML = ac.length ? ac.map(a => `
+    <tr>
+      <td>${a.name}<div class="mono">${a.id}</div></td>
+      <td class="mono">${a.account_id}</td>
+      <td class="mono">${a.window_start||'-'}~${a.window_end||'-'}</td>
+      <td>${a.last_status ? `<span class="pill p-${a.last_status}">${a.last_status}</span>` : '<span class="mono">未运行</span>'}</td>
+      <td class="mono">${a.last_day||'-'}</td>
+      <td class="mono">${secs(a.last_exec_ms)}</td>
+      <td>${a.last_error ? `<span class="err" title="${String(a.last_error).replace(/"/g,'&quot;')}">${a.last_error}</span>` : '<span class="mono">—</span>'}</td>
+    </tr>`).join('') : '<tr><td colspan="7" class="empty">还没有活动配置</td></tr>';
+
+  // ── 步骤级明细 ──
+  const latestRun = rs.length ? rs[0].id : null;
+  let st = { steps: [], byStage: [], calls: [] };
+  if (latestRun) {
+    try { st = await fetch('/api/steps?run=' + latestRun).then(r => r.json()); } catch {}
+  }
+  const stageColors = { prep:'#5b8def', entry:'#3ddc97', probe:'#e8c07d', task:'#c07de8', collect:'#e8636a', settle:'#7de8d8', verify:'#8b93a7' };
+  const stageSum = (st.byStage || []);
+  document.getElementById('stepsummary').innerHTML = stageSum.length ? stageSum.map(x => `
+    <div class="card">
+      <div class="k">${x.stage}</div>
+      <div class="v">${secs(x.ms)}<span class="u"> ${fmt(x.tokens)} tok</span></div>
+      <div class="small">${x.n} 步 · ${x.calls} 次调用</div>
+    </div>`).join('') : '<div class="card"><div class="k">暂无</div><div class="v">-</div></div>';
+
+  const stChart = echarts.init(document.getElementById('stepchart'));
+  const stData = (st.steps || []).filter(x => x.ms > 0);
+  stChart.setOption({
+    backgroundColor: 'transparent',
+    grid: { left: 60, right: 60, top: 30, bottom: 30 },
+    tooltip: { trigger: 'axis', backgroundColor: '#1e222b', borderColor: '#262b36',
+      textStyle: { color: '#e6e9ef', fontSize: 12 },
+      formatter: p => { const d = stData[p[0].dataIndex]; return `${d.stage} · ${d.action}<br/>${d.ms}ms · ${fmt(d.tokens)} tok`; } },
+    xAxis: { type: 'value', name: '步骤序号', axisLabel: { color: '#8b93a7', fontSize: 10 },
+      splitLine: { lineStyle: { color: '#1c2029' } } },
+    yAxis: { type: 'value', name: '耗时(ms)', axisLabel: { color: '#8b93a7', fontSize: 10 },
+      splitLine: { lineStyle: { color: '#1c2029' } } },
+    series: [{
+      type: 'bar',
+      data: stData.map((d, i) => ({ value: [i + 1, d.ms], itemStyle: { color: stageColors[d.stage] || '#8b93a7' } })),
+      barMaxWidth: 14,
+    }],
+  });
+  if (!stData.length) {
+    stChart.setOption({ graphic: { type: 'text', left: 'center', top: 'middle',
+      style: { text: '还没有步骤数据，跑一次执行就有了', fill: '#8b93a7', fontSize: 13 } } });
+  }
+
+  document.getElementById('steps').innerHTML = (st.steps || []).length ? st.steps.map(d => `
+    <tr>
+      <td>${d.seq}</td>
+      <td><span class="tag" style="color:${stageColors[d.stage]||'#8b93a7'}">${d.stage}</span></td>
+      <td class="mono">${d.action}</td>
+      <td class="small">${(d.detail || '').slice(0, 36)}</td>
+      <td class="small">${new Date(d.started_at).toLocaleTimeString('zh-CN')}</td>
+      <td class="${d.ms > 20000 ? 'down' : ''}">${d.ms}ms</td>
+      <td>${fmt(d.tokens)}</td>
+      <td>${d.calls}</td>
+      <td>${d.ok ? '<span class="tag up">ok</span>' : '<span class="tag down">fail</span>'}</td>
+    </tr>`).join('') : '<tr><td colspan="9" class="empty">还没有步骤明细（跑一次执行后生成）</td></tr>';
+
+  // ── 经验进化区块 ──
+  const tp = (ln && ln.templates) || [];
+  const pred = (ln && ln.prediction) || null;
+  const rcp = (ln && ln.recipes) || [];
+
+  document.getElementById('learnsummary').innerHTML = `
+    <div class="card"><div class="k">任务模板</div><div class="v">${tp.length}<span class="u"> 个类型</span></div></div>
+    <div class="card"><div class="k">观测实例</div><div class="v">${rcp.length}<span class="u"> 条</span></div></div>
+    <div class="card"><div class="k">可零调用执行</div><div class="v">${pred ? pred.covered : 0}<span class="u"> 次</span></div></div>
+    <div class="card"><div class="k">需现场学习</div><div class="v">${pred ? pred.uncovered : 0}<span class="u"> 次</span></div></div>
+  `;
+
+  document.getElementById('templates').innerHTML = tp.length ? tp.map(t => `
+    <tr>
+      <td><b>${t.kind}</b></td>
+      <td class="mono">${t.steps.map(s => s.act + (s.seconds ? '(' + s.seconds + 's)' : '')).join(' → ')}</td>
+      <td class="small">${t.invariants.map(i => '· ' + i).join('<br>') || '-'}</td>
+      <td class="small">${t.failureModes.map(i => '· ' + i).join('<br>') || '-'}</td>
+      <td><span class="tag ${t.confidence === 'high' ? 'up' : t.confidence === 'medium' ? 'flat' : 'down'}">${t.confidence}</span></td>
+      <td class="small">${t.derivedFrom.slice(0, 2).map(x => x.slice(0, 20)).join('<br>') || '-'}</td>
+    </tr>`).join('') : '<tr><td colspan="6" class="empty">还没有模板，跑一次运行后执行 learn 即可生成</td></tr>';
+
+  document.getElementById('prediction').innerHTML = pred && pred.tasks && pred.tasks.length ? pred.tasks.map(t => `
+    <tr>
+      <td>${t.task}</td>
+      <td>${t.kind}</td>
+      <td>${t.times}</td>
+      <td class="mono">${t.steps.length ? t.steps.map(s => s.act + (s.text_template ? ':' + s.text_template : '')).join(' → ') : '-'}</td>
+      <td><span class="tag ${t.confidence === 'high' ? 'up' : t.confidence === 'medium' ? 'flat' : 'down'}">${t.confidence}</span></td>
+      <td>${t.needsAI ? '<span class="tag down">需学习</span>' : '<span class="tag up">可直执行</span>'}</td>
+    </tr>`).join('') : '<tr><td colspan="6" class="empty">还没有预测（需要 inventory + 模板）</td></tr>';
+
+  document.getElementById('recipes').innerHTML = rcp.length ? rcp.map(r => `
+    <tr>
+      <td>${r.task.slice(0, 40)}</td>
+      <td>${r.kind}</td>
+      <td>${r.steps.length}</td>
+      <td>${r.retries ?? 0}</td>
+      <td class="small">${new Date(r.observedAt).toLocaleString('zh-CN')}</td>
+    </tr>`).join('') : '<tr><td colspan="5" class="empty">还没有观测记录</td></tr>';
+
+  document.getElementById('runs').innerHTML = rs.length ? rs.map(r => `
+    <tr>
+      <td class="mono">${r.id}</td>
+      <td class="mono">${r.day}</td>
+      <td>${r.activity_name||r.activity_id}</td>
+      <td><span class="pill p-${r.status}">${r.status}</span></td>
+      <td class="mono">${r.balance_before ?? '-'} → ${r.balance_after ?? '-'}${
+        r.balance_before!=null && r.balance_after!=null
+          ? ` <span class="${cls(r.balance_after-r.balance_before)}">(${sign(r.balance_after-r.balance_before)})</span>` : ''}</td>
+      <td class="mono">${secs(r.prep_ms)}</td>
+      <td class="mono">${secs(r.exec_ms)}</td>
+      <td class="mono">${r.total_tokens == null ? '—' : fmt(r.total_tokens)}</td>
+      <td class="mono">${r.model_calls == null ? '—' : r.model_calls}</td>
+    </tr>`).join('') : '<tr><td colspan="9" class="empty">还没有执行记录</td></tr>';
+}
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

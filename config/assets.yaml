@@ -1,0 +1,32 @@
+# 资产定义。一份配置 = 一种可累积的虚拟资产。
+# cny_per_unit 是唯一的折算入口：改汇率只改这里，历史快照不重算。
+#
+# expiry_days  null = 长期有效（但要写清楚规则，面板才能算出过期风险）
+
+assets:
+  - id: taobao_coins
+    platform: taobao
+    name: 淘金币
+    unit: 金币
+    cny_per_unit: 0.01          # 100 金币 = ¥1
+    expiry_days: null           # 长期，但宝箱有容量上限，满了不再累积
+    redeem_path: 淘宝下单抵扣 / 淘金币频道兑换
+    note: 任务制，非签到制；档位奖励 + 浏览任务
+
+  - id: jd_beads
+    platform: jd
+    name: 京豆
+    unit: 京豆
+    cny_per_unit: 0.01          # 100 京豆 = ¥1
+    expiry_days: 180            # 2026 新规：最长 180 天过期
+    redeem_path: 京东下单抵扣（单笔最高抵订单 50%）
+    note: 有真正的每日签到
+
+  - id: taobao_value
+    platform: taobao
+    name: 淘气值
+    unit: 分
+    cny_per_unit: 0
+    expiry_days: 365
+    redeem_path: 不直接折现，决定会员权益与 88VIP 资格
+    note: 年度重置；价值体现在权益而非金额

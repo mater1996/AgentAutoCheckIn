@@ -1,0 +1,121 @@
+(node:35361) DeprecationWarning: mock.module(): options.namedExports is deprecated. Use options.exports instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+✖ ensurePanel false prevents task execution and initial collection (1.309458ms)
+✖ ensurePanel throwing is a prerequisite failure with an explicit reason (0.096125ms)
+✖ panel failure after entry does not consume a queued task (0.181708ms)
+✖ failed observation after a task cannot trigger another task or tier collection (3003.51125ms)
+✖ popup recovery that loses observation stops before cross-tier collection (3004.125125ms)
+✔ one bounded recovery can restore observation before the next task (3005.98675ms)
+✖ cross-tier predicate rejects either unknown observation (0.995041ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 1
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9146.725083
+
+✖ failing tests:
+
+test at tests/loop.test.ts:1:1598
+✖ ensurePanel false prevents task execution and initial collection (1.309458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:42:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/loop.test.ts:1:1982
+✖ ensurePanel throwing is a prerequisite failure with an explicit reason (0.096125ms)
+  Error: fixture failure
+      at Object.ensurePanel (/Users/mater/Project/checkin-platform/tests/loop.test.ts:50:65)
+      at Module.runTaskLoop (/Users/mater/Project/checkin-platform/runner/loop.ts:176:36)
+      at async TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:51:18)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7)
+
+test at tests/loop.test.ts:1:2305
+✖ panel failure after entry does not consume a queued task (0.181708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:60:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/loop.test.ts:1:2685
+✖ failed observation after a task cannot trigger another task or tier collection (3003.51125ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /观测失败/. Input:
+  
+  '观测无效：无法确认当前进度与剩余任务，暂停依赖动作'
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:71:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '观测无效：无法确认当前进度与剩余任务，暂停依赖动作',
+    expected: /观测失败/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/loop.test.ts:1:3101
+✖ popup recovery that loses observation stops before cross-tier collection (3004.125125ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /观测失败/. Input:
+  
+  '观测无效：无法确认当前进度与剩余任务，暂停依赖动作'
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:83:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '观测无效：无法确认当前进度与剩余任务，暂停依赖动作',
+    expected: /观测失败/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/loop.test.ts:1:3939
+✖ cross-tier predicate rejects either unknown observation (0.995041ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:100:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1397:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:969:18)
+      at Test.postRun (node:internal/test_runner/test:1537:19)
+      at Test.run (node:internal/test_runner/test:1462:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit_code=1

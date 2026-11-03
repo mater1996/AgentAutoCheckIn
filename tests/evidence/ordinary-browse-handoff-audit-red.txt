@@ -1,0 +1,33 @@
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+✖ whole zero-model audit rejects AI destination handoff provenance even if usage and agent_result are omitted (220.110167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 332.336708
+
+✖ failing tests:
+
+test at tests/staged-current-components-audit.test.ts:1:8331
+✖ whole zero-model audit rejects AI destination handoff provenance even if usage and agent_result are omitted (220.110167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/staged-current-components-audit.test.ts:69:9)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

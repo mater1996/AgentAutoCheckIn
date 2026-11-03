@@ -1,0 +1,17 @@
+✔ unknown or malformed observations cannot imply completion or no remaining tasks (0.594291ms)
+✔ pure observation validator is usable by callers with untrusted input (0.052917ms)
+✔ reward threshold does not count as exhausted task quota (0.074584ms)
+✔ missing task counts remain unknown instead of being inferred from reward progress (0.454417ms)
+✔ probes reject malformed current counts and expose explicit validity (0.682042ms)
+✔ invalid observations retry even when the progress denominator is positive (1503.029458ms)
+✔ strict counter parsers never salvage negative, fractional, or unsafe readings (0.993875ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1579.251292
+
+exit_code=0

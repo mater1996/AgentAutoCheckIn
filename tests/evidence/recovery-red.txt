@@ -1,0 +1,24 @@
+✖ recovery step failure returns an observation failure instead of escaping the loop (3006.073709ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3071.109834
+
+✖ failing tests:
+
+test at tests/loop.test.ts:1:5166
+✖ recovery step failure returns an observation failure instead of escaping the loop (3006.073709ms)
+  Error: recovery fixture failure
+      at Object.fixture (/Users/mater/Project/checkin-platform/tests/loop.test.ts:132:45)
+      at execSteps (/Users/mater/Project/checkin-platform/tests/loop.test.ts:12:42)
+      at readCurrent (/Users/mater/Project/checkin-platform/runner/loop.ts:97:13)
+      at async Module.runTaskLoop (/Users/mater/Project/checkin-platform/runner/loop.ts:216:13)
+      at async TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/loop.test.ts:134:18)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+exit_code=1

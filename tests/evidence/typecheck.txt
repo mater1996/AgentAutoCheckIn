@@ -1,0 +1,3 @@
+runner/config.ts(310,32): error TS2339: Property 'entry_activity_any' does not exist on type 'PrepCfg'.
+
+exit_code=1

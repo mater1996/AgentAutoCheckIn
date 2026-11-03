@@ -1,0 +1,35 @@
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ ordinary browse handoff carries requirements to OCR-free visual receipt on the first new frame (22.944334ms)
+STAGE open_task
+STAGE open_task
+✖ open_task reentry accepts completed destination only with prior ordinary evidence from this attempt (9.707708ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 183.728
+
+✖ failing tests:
+
+test at tests/staged-ai-task-recovery.test.ts:1:10457
+✖ open_task reentry accepts completed destination only with prior ordinary evidence from this attempt (9.707708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (/Users/mater/Project/checkin-platform/tests/staged-ai-task-recovery.test.ts:105:10)
+      at async Test.run (node:internal/test_runner/test:1404:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:969:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

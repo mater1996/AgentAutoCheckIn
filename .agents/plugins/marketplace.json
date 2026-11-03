@@ -1,0 +1,16 @@
+{
+  "name": "checkin-local",
+  "plugins": [
+    {
+      "name": "checkin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex/checkin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  ]
+}

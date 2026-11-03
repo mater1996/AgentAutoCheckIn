@@ -1,0 +1,792 @@
+STAGE select_task
+STAGE open_task
+STAGE settle
+STAGE task_receipt
+STAGE select_task
+✔ run236 saved ordinary browse response hands open_task to the first new completed receipt without another model or input (111.225625ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ ordinary browse handoff carries requirements to OCR-free visual receipt on the first new frame (16.43425ms)
+STAGE open_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE settle
+STAGE select_task
+✔ open_task reentry accepts completed destination only with prior ordinary evidence from this attempt (51.818792ms)
+STAGE open_task
+STAGE settle
+STAGE select_task
+✔ completion text cannot seed ordinary browse requirement evidence in open_task (14.996208ms)
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ handoff refuses old attempt, foreign owner, old frame, login and unknown dispatch without another entry (86.199458ms)
+STAGE open_task
+STAGE task_receipt
+STAGE settle
+STAGE settle
+STAGE select_task
+✔ current completion keywords precede geometry contracts and keep same-attempt stable settlement (26.747875ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current AI receipt can read original pixels when OCR failed without using its quote as a click target (19.840417ms)
+STAGE open_task
+STAGE select_task
+✔ current AI can confirm the ordinary destination directly from pixels when OCR is unavailable (11.815125ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current keyword policy defers negative/tutorial text and refuses stale owner or attempt (120.026042ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ current keyword receipt ignores ordinary product confirmation and authorization wording (21.140459ms)
+STAGE open_task
+STAGE task_receipt
+STAGE settle
+STAGE settle
+STAGE select_task
+✔ explicit recovery consults one current-frame AI only after bound entry local unknown, preserving receipt and two-frame settlement (21.128917ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ unknown local receipt can use one AI wait through the existing dispatcher and reobserve before completion (18.882541ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovery rejects wrong task binding, panel quotations, unsafe requirements and unverified completion (97.182292ms)
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ unknown recovery dispatch and another attempt never cause another AI action or entry (14.779334ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovered coordinate taps cannot target sensitive controls or bare coordinates (40.278666ms)
+STAGE open_task
+STAGE settle
+STAGE select_task
+✔ run219 original IP skeleton frame reaches AI with actual entry context and bounded wait without address tap (174.402417ms)
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE select_task
+✔ unknown return modal uses one bound current-frame AI back without granting task or global close authority (20.934792ms)
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE return_list
+STAGE select_task
+✔ unknown first system return is never replayed on stage reentry (22.369083ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ an unconfirmed recovered tap cannot be proposed again on the next frame (13.08875ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+✔ recovery wait with configured continuous scrolling does not enter the scroll revalidation hook (16.618417ms)
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+✔ local evidence and disabled recovery retain the old no-model contract (42.056ms)
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+✔ wrong owner, stale source, exhausted allowance and failed model stop before recovery actions (53.57475ms)
+STAGE open_task
+✔ model elapsed time expires original authority instead of renewing capturedAt (13.152833ms)
+✔ current continuous component rejects partial occlusion even when saved and raw text agree (214.371875ms)
+✔ explicit current policy selects one continuous contract and preserves it through receipts (81.932042ms)
+✔ current dispatch revalidation uses the selected contract and current geometry across product changes (178.434834ms)
+✔ current immersive inspector accepts multiple real components with unchanged reward boundaries (169.814667ms)
+✔ current immersive rejects a partially covered amount with stale saved OCR (126.564125ms)
+✔ split raw risk text blocks both current policies (16.780041ms)
+✔ current inspectors reject owner, raw/saved contradictions, ambiguity and unsupported requirements (63.1805ms)
+✔ synthetic moved immersive components ignore product and promotion decoration (45.426625ms)
+✔ synthetic completed50 is unknown under current immersive policy (6.021667ms)
+✔ current immersive rejects an extra competing reward embedded in another raw line (4.435417ms)
+✔ current continuous accepts additional real product layouts with ordinary raw edge rounding (118.086084ms)
+✔ current continuous raw binding reproduces the existing device float-edge rule (39.542125ms)
+✔ current continuous inspector accepts real browsing and receipts without merchandise authority (117.852167ms)
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole zero-model audit rejects ai_task_destination_confirmed provenance even if usage and agent_result are omitted (385.547042ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole zero-model audit rejects ai_task_receipt provenance even if usage and agent_result are omitted (293.604959ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit accepts run225 receipt without requiring a redundant scroll or historical reward (259.518958ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit rejects raw-text (245.05825ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit rejects observation-text (224.378875ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit rejects wrong-attempt (221.965083ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit rejects duplicate-event (228.591875ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole keyword audit rejects stale-settlement (225.784917ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole audit consumes real current runtime engine trace while retaining whole-session zero-model standard (680.125334ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects settlement-purpose (386.652792ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects receipt-version (351.221917ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects destination-version (283.229083ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects fresh-coordinates (273.666208ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects duplicate-settlement (348.885292ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects nonzero-model (350.334333ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ implementation fingerprint includes taskCompletionPolicy (350.297834ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ implementation fingerprint includes taskObservationPolicy (345.154916ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ implementation fingerprint includes panelReadPolicy (339.372083ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ implementation fingerprint includes aiTaskRecovery (343.720708ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ implementation fingerprint includes aiPanelReader (339.234791ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ current policy requires source archive ai-panel-reader.ts (346.930625ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+✔ current policy requires source archive script-validation.ts (342.583ms)
+✔ current dwell audit replays original contracts and preserves incomplete receipt unknown (201.47575ms)
+STAGE select_task
+STAGE open_task
+✔ current immersive audit keeps new inspection version and explicitly rejects unmigrated quality and transition combinations (28.127208ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects wrong-owner (354.489417ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects wrong-task (200.201917ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects wrong-attempt (345.357167ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects return-purpose (364.798083ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects stale-settlement (345.145708ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ focused settlement rejects coherent sidecars captured before receipt even with distinct frame IDs (346.445917ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole focused audit refuses a partial read placed in selection observations (345.110208ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole audit labels current immersive quality combination unsupported rather than silently migrating it (191.802625ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+✔ whole current audit rejects wrong-receipt-event (348.323667ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+✔ whole current audit rejects duplicate-receipt-event (343.890834ms)
+✔ focused audit does not grant inventory authority to partial status (5.673166ms)
+✔ current task audit selects once and keeps current policy and version through completion (81.70125ms)
+✔ focused audit binds settlement purpose and selected quota without inventing a complete inventory (9.263167ms)
+STAGE collect_list
+STAGE select_task
+STAGE open_task
+(node:90989) ExperimentalWarning: Module mocking is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE collect_list
+STAGE select_task
+STAGE open_task
+✔ real current inspector → runtime → engine: one ordinary dwell task reaches focused stable settlement (526.190792ms)
+STAGE task_receipt
+STAGE open_task
+STAGE settle
+✔ wrong synthetic requirement fails the real checker without completion, wait authority or another entry (263.00425ms)
+✔ current components accept real 160 browsing and full completion without changing contract bytes (220.210917ms)
+✔ relative component geometry rejects unrelated labels and conflicting requirements (228.871291ms)
+✔ independently learned IP requirement authorizes five seconds without changing receiptOnly base (430.957083ms)
+✔ completion rejects conflicting text, wrong amount and broken current page relationships (308.803291ms)
+✔ scratch replay moves current text/components and replaces decoration without historical pixels (65.993041ms)
+✔ current binding rejects owner, login, duplicate target, raw conflict and foreign PNG metadata (408.194833ms)
+✔ waiting requires the pinned browsing source to contain an actual full requirement (79.78725ms)
+✔ source and reference hashes are checked even after recomputing contract version (74.274292ms)
+✔ receiptOnly cannot acquire waiting authority from a fully readable current replay (71.613584ms)
+✔ a recomputed version cannot replace source identity anchors with unrelated OCR (19.879625ms)
+✔ ten source contracts keep exact readable completions and unknown partial OCR distinct (1523.608875ms)
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE open_list
+STAGE unknown_navigation
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE select_task
+STAGE select_task
+STAGE select_task
+STAGE select_task
+STAGE select_task
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+✔ candidate audit records the dwell version and validated wait accounting (17.606875ms)
+✔ invalid dwell duration cannot grant wait authority (25.310417ms)
+✔ only a unique exact dwell task contract obtains wait authority (3.582458ms)
+✔ a task without an exact dwell contract still uses the continuous local inspector (3.521584ms)
+✔ strict unrecognized entry navigation fails locally with an auditable stage status (1.766792ms)
+✔ strict validation stops unmatched local evidence before any model call and retains local review (5.604042ms)
+✔ strict selection can revalidate completed history only with exact do plan and remaining current quota (1.969708ms)
+✔ strict dynamic selection rejects model fallback before calling it (0.411833ms)
+✔ dwell wait time and slice limits persist across repeated task_receipt stages without inventing completion (6.874875ms)
+✔ unknown dwell wait dispatch is not replayed on reentry (4.235375ms)
+✔ unknown entry, foreign owner, blocked page and another attempt cannot authorize dwell wait (10.161833ms)
+✔ dwell receipt can complete immediately without any task wait (3.051916ms)
+✔ dwell wait respects the remaining stage time budget (1.898125ms)
+✔ dwell contract executes fresh checked wait slices and real receipt with zero model calls (3.673292ms)
+✔ actual failed open_app archives raw evidence and error without sharing execution actions (65.282417ms)
+✔ all engine execution states stay session-only while learned procedure and config remain unchanged (1.117833ms)
+✔ unrecognized runtime frame payload cannot become a shared config (15.740625ms)
+✔ review scope cannot silently discard an operational userId (12.996792ms)
+✔ empty review envelopes keep the existing ignored-review behavior (20.582417ms)
+✔ session save boundary keeps foreground failure and complete raw review (23.942083ms)
+✔ archive rejection preserves final error and books no gain: user (18.145ms)
+✔ archive rejection preserves final error and books no gain: account (16.717542ms)
+✔ archive rejection preserves final error and books no gain: stage (14.436833ms)
+✔ archive rejection preserves final error and books no gain: review (14.414083ms)
+✔ archive rejection preserves final error and books no gain: config (15.51975ms)
+✔ archive rejection preserves final error and books no gain: procedure (18.083167ms)
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE settle
+STAGE settle
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+✔ 25 second configuration requires its exact bounded segment (0.848709ms)
+✔ explicit 25 second contract passes the same options through entry inspection and swipe revalidation (18.013875ms)
+✔ injected inspection exercises real engine without depending on module development (9.985666ms)
+✔ inspection errors hand the current destination to model recovery without scrolling (7.093833ms)
+✔ candidate settlement rejects another attempt and wrong owning account (15.4895ms)
+STAGE enter_activity
+STAGE open_list
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE review_task
+STAGE select_task
+STAGE open_task
+✔ revalidation must leave the full continuous gesture budget after local inspection (909.823458ms)
+✔ real engine/runtime execute injected learned candidate entry, swipe, receipt, return and settlement with zero model calls (12.24475ms)
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+✔ real 187 initial requirement integrates with engine/runtime and reuses only historical completed50 component (538.502625ms)
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE return_list
+STAGE settle
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+STAGE select_task
+STAGE open_task
+STAGE task_receipt
+✔ actual learned module integrates with real engine/runtime using original 153 and 155 screenshots (1221.036208ms)
+✔ entry completed receipt is captured without a second browse round (4.272625ms)
+✔ unknown entry dispatch is not replayed or granted local destination authority (3.108375ms)
+✔ unknown continuous dispatch and unchanged browsing never start another gesture round (12.716458ms)
+✔ foreign scope and unknown destination frames cannot obtain candidate swipes (5.68375ms)
+✔ synthetic two-stage navigation audit accepts real 198 home to 200 landing to 195 panel (477.0085ms)
+✔ two-stage audit refuses cross-stage event (201.814458ms)
+✔ two-stage audit refuses duplicate list tap (237.590375ms)
+✔ two-stage audit refuses wrong landing provenance (293.699292ms)
+✔ two-stage audit refuses wrong landing owner (201.162458ms)
+✔ two-stage audit refuses missing panel arrival (195.967125ms)
+✔ two-stage audit refuses unlearned list back (204.765667ms)
+✔ two-stage audit accepts initial landing with no home tap (265.484875ms)
+✔ synthetic full navigation audit independently replays saved same-frame refinement without OCR (642.938667ms)
+✔ synthetic full navigation audit rejects fabricated refinement when original OCR already has tao (138.857334ms)
+✔ synthetic full navigation audit accepts original home OCR without refinement (166.840208ms)
+✔ synthetic full navigation audit rejects missing refinement (224.343583ms)
+✔ synthetic full navigation audit rejects covered stable pixels with consistent hashes (346.433625ms)
+✔ synthetic full navigation audit rejects other source frame (163.78375ms)
+✔ synthetic full navigation audit rejects wrong source sha (168.509417ms)
+✔ synthetic full navigation audit rejects changed raw PNG (166.334959ms)
+✔ synthetic full navigation audit rejects changed current PNG (165.994375ms)
+✔ synthetic full navigation audit rejects changed crop (161.918459ms)
+✔ synthetic full navigation audit rejects changed crop with updated hash (187.701167ms)
+✔ synthetic full navigation audit rejects wrong crop sha (166.938958ms)
+✔ synthetic full navigation audit rejects changed OCR bytes (171.312333ms)
+✔ synthetic full navigation audit rejects wrong OCR sha (163.806125ms)
+✔ synthetic full navigation audit rejects missing raw PNG (163.223708ms)
+✔ synthetic full navigation audit rejects missing crop (167.721625ms)
+✔ synthetic full navigation audit rejects missing OCR (161.265666ms)
+✔ synthetic full navigation audit rejects wrong ROI (161.116917ms)
+✔ synthetic full navigation audit rejects wrong scale (168.796166ms)
+✔ synthetic full navigation audit rejects wrong mapped bounds (183.524584ms)
+✔ synthetic full navigation audit rejects elapsed over budget (164.447833ms)
+✔ synthetic full navigation audit rejects negative elapsed (170.173834ms)
+✔ synthetic full navigation audit rejects missing elapsed (167.394792ms)
+✔ synthetic full navigation audit rejects wrong event engine (163.594709ms)
+✔ synthetic full navigation audit rejects wrong OCR engine (186.8135ms)
+✔ synthetic full navigation audit rejects missing OCR input path (160.878666ms)
+✔ synthetic full navigation audit rejects wrong OCR input path (181.295416ms)
+✔ synthetic full navigation audit rejects wrong original OCR file (185.645959ms)
+✔ synthetic full navigation audit rejects no exact tao (190.201375ms)
+✔ synthetic full navigation audit rejects duplicate tao (185.254667ms)
+✔ synthetic full navigation audit rejects extra OCR page (188.955542ms)
+✔ synthetic full navigation audit rejects wrong OCR dimensions (181.42325ms)
+✔ synthetic full navigation audit rejects invalid OCR bounds (186.248833ms)
+✔ synthetic full navigation audit rejects valid mapping outside learned bounds (232.489792ms)
+✔ synthetic full navigation audit rejects crop path outside root (168.496208ms)
+✔ synthetic full navigation audit rejects raw path symlink outside root (163.946583ms)
+✔ synthetic full navigation audit rejects event before source capture (161.568ms)
+✔ synthetic full navigation audit rejects event after arrival (163.234333ms)
+✔ synthetic full navigation audit rejects elapsed beyond dispatch interval (164.698542ms)
+✔ synthetic full navigation audit rejects missing event time (166.349625ms)
+✔ synthetic full navigation audit rejects reversed arrival order (161.434583ms)
+✔ synthetic full navigation audit rejects unobserved source before arrival (162.745ms)
+✔ synthetic full navigation audit rejects duplicate navigation attempt (161.283375ms)
+✔ synthetic full navigation audit rejects wrong dispatched action (162.286875ms)
+✔ synthetic full navigation audit rejects wrong source provenance (246.571375ms)
+✔ synthetic full navigation audit rejects refinement outside session (161.626667ms)
+✔ navigation audit accepts initial real panel frames and rejects a tampered arrival (92.134916ms)
+✔ navigation audit refuses enabled navigation without actual learned arrival evidence (10.962708ms)
+✔ navigation audit requires actual session archives of checker and shared pixel comparator (10.520125ms)
+✔ audit implementation config retains localLaunch (8.917708ms)
+✔ audit implementation config retains localActivityNavigation (9.326709ms)
+✔ automatic continuous audit refuses missing contract selection and missing selector source even with other complete synthetic records (10.302875ms)
+✔ synthetic autoContract audit accepts fresh authority preserved in real engine revalidation event (567.813375ms)
+✔ synthetic autoContract audit accepts complete real-PNG source-backed session (545.246833ms)
+✔ synthetic autoContract audit rejects missing selection (162.797042ms)
+✔ synthetic autoContract audit rejects duplicate selection (165.549916ms)
+✔ synthetic autoContract audit rejects wrong option (301.783875ms)
+✔ synthetic autoContract audit rejects wrong budget (306.5165ms)
+✔ synthetic autoContract audit rejects wrong provenance (307.425084ms)
+✔ synthetic autoContract audit rejects other attempt selection (159.938167ms)
+✔ synthetic autoContract audit rejects wrong fresh frame (301.671542ms)
+✔ synthetic autoContract audit rejects unrefreshed swipe frame (308.547708ms)
+✔ synthetic autoContract audit rejects wrong receipt amount (545.008459ms)
+✔ synthetic autoContract audit rejects missing selector archive (544.667792ms)
+✔ synthetic mock audit accepts only complete source-backed 20 to 35 chains (399.957625ms)
+✔ synthetic 20 to 35 audit rejects conflicting receipt-stage browse frame (243.884792ms)
+✔ synthetic 20 to 35 audit rejects wait dispatch timestamp outside receipt interval (244.161084ms)
+✔ synthetic 20 to 35 audit rejects missing transition config (246.2275ms)
+✔ synthetic 20 to 35 audit rejects source bytes tampered (106.2825ms)
+✔ synthetic 20 to 35 audit rejects source frame hash tampered (103.746917ms)
+✔ synthetic 20 to 35 audit rejects source PNG tampered (105.193042ms)
+✔ synthetic 20 to 35 audit rejects missing wait actions (241.52825ms)
+✔ synthetic 20 to 35 audit rejects missing wait dispatch event (247.177208ms)
+✔ synthetic 20 to 35 audit rejects wait event after receipt (245.131833ms)
+✔ synthetic 20 to 35 audit rejects zero wait (242.092875ms)
+✔ synthetic 20 to 35 audit rejects excess wait (244.359625ms)
+✔ synthetic 20 to 35 audit rejects wrong wait total (242.811375ms)
+✔ synthetic 20 to 35 audit rejects wrong transition attempt (244.959333ms)
+✔ synthetic 20 to 35 audit rejects wrong transition browse frame (242.628916ms)
+✔ synthetic 20 to 35 audit rejects wrong transition receipt frame (247.158542ms)
+✔ synthetic 20 to 35 audit rejects wrong transition version (244.776667ms)
+✔ synthetic 20 to 35 audit rejects missing receipt variant version (251.322292ms)
+✔ synthetic 20 to 35 audit rejects missing receipt requirement (249.612916ms)
+✔ synthetic 20 to 35 audit rejects wrong learned receipt requirement (382.910334ms)
+✔ synthetic 20 to 35 audit rejects wrong learned receipt variant version (383.185709ms)
+✔ synthetic 20 to 35 audit rejects wrong pinned amount (242.740083ms)
+✔ synthetic 20 to 35 audit rejects missing entry dispatch (250.295542ms)
+✔ synthetic 20 to 35 audit rejects out of order capture (243.453333ms)
+✔ synthetic 20 to 35 audit rejects wrong current owner (354.309375ms)
+✔ synthetic 20 to 35 audit rejects changed current PNG (351.422167ms)
+✔ synthetic 20 to 35 audit rejects missing transition archive (382.397ms)
+✔ synthetic 20 to 35 audit rejects unknown stage action (241.960084ms)
+✔ synthetic 20 to 35 audit rejects missing settlement (383.00525ms)
+✔ synthetic 20 to 35 audit rejects nonzero model usage (386.44525ms)
+✔ real stopped 184 remains ineligible and its evidence is never backfilled (5014.037459ms)
+✔ immersive v2 accepts explicit amount 20 with pinned observation and source 145 (18.567792ms)
+✔ immersive v2 accepts explicit amount 35 with pinned observation and source 145 (19.467834ms)
+✔ immersive v2 accepts explicit amount 50 with pinned observation and source 145 (18.113208ms)
+✔ immersive v2 rejects unknown amount (18.718791ms)
+✔ immersive v2 rejects wrong completed amount (18.054375ms)
+✔ immersive v2 rejects missing reward (18.554875ms)
+✔ immersive v2 rejects wrong quote amount (22.029083ms)
+✔ immersive v2 rejects wrong receipt event amount (22.919208ms)
+✔ immersive v2 rejects wrong receipt source (22.887167ms)
+✔ immersive v2 rejects wrong receipt version (20.106875ms)
+✔ immersive v2 rejects missing pinned observation (19.478291ms)
+✔ immersive v2 authorization must match both configured version and source (25.592333ms)
+✔ immersive v2 current allowed amount changes invalidate its archived config (20.037209ms)
+✔ immersive v2 rejects an amount excluded by its explicit config (18.596541ms)
+✔ immersive v2 allowed amounts participate in implementation fingerprint (18.842875ms)
+✔ two independent immersive sessions bind source 145 and the actual archived checker (17.410666ms)
+✔ matched immersive observation budget participates in implementation fingerprint (16.971292ms)
+✔ current immersive config cannot reuse an archive with a different matched budget (16.883833ms)
+✔ unmatched immersive config does not affect another task fingerprint or require its checker archive (16.601208ms)
+✔ immersive audit rejects authorization source 153 (16.635292ms)
+✔ immersive audit rejects authorization version (16.645083ms)
+✔ immersive audit rejects disabled immersive (17.129208ms)
+✔ immersive audit rejects disabled learned browse (16.280125ms)
+✔ immersive audit rejects different task name (17.19575ms)
+✔ immersive audit rejects different task instruction (16.38875ms)
+✔ immersive audit rejects wrong config source (19.248959ms)
+✔ immersive audit rejects wrong config version (16.980292ms)
+✔ immersive audit rejects changed current checker (16.880583ms)
+✔ immersive audit rejects corrupt checker archive (16.820833ms)
+✔ immersive audit rejects missing checker binding (17.26025ms)
+✔ immersive audit rejects model usage (16.8885ms)
+✔ immersive audit rejects unknown receipt event (16.535ms)
+✔ immersive audit rejects unverified task action (16.667166ms)
+✔ immersive audit rejects recovered entry (16.301292ms)
+✔ malformed per-attempt stage evidence is reported without aborting the other candidates (12.587334ms)
+✔ embedded matched contract source requires real bytes and an explicit SHA256 (14.778958ms)
+✔ matched dwell contract uses its actual local version and archived checker; other task contracts do not change fingerprint (14.638ms)
+✔ real run 162 dwell receipt quote is accepted as an ordered component sequence (23.1745ms)
+✔ historical dwell provenance requires the actual evidence adapter archive (15.084917ms)
+✔ remaining quota requires the same returned identity for stability; another named row cannot inherit completion (16.538625ms)
+✔ two execution rows pointing to the same session never become two validations (10.616416ms)
+✔ live project audit preserves known candidates and includes exactly the successful account identities without changing historical files (4437.537875ms)
+✔ positive known usage remains measurable while failing zero model acceptance (10.596875ms)
+✔ changing current matched contract reference cannot reuse historical validation (9.711167ms)
+✔ same config path may change plan and source provenance without invalidating archived implementation (15.960542ms)
+✔ provenance and plan changes preserve implementation fingerprint (14.044167ms)
+✔ null scope and null date fail closed instead of coercing to zero or epoch (15.711833ms)
+✔ rejects usage null (14.908208ms)
+✔ rejects partial usage (14.794625ms)
+✔ rejects model usage (13.870417ms)
+✔ rejects missing usedScriptVersion (15.012667ms)
+✔ rejects unknown action source (13.694667ms)
+✔ rejects no actual task action (14.922625ms)
+✔ rejects stopped stage (13.649ms)
+✔ rejects awake cleanup (14.066125ms)
+✔ rejects missing authorization (13.743875ms)
+✔ rejects changed core source (15.109334ms)
+✔ rejects changed archive helper (13.921ms)
+✔ rejects missing archives (15.374709ms)
+✔ rejects wrong receipt attempt (17.518958ms)
+✔ rejects wrong entry coordinates (15.318833ms)
+✔ rejects unstable actual balance (16.144667ms)
+✔ source archive helper requires a session-bound archive even when its bytes exist (18.377125ms)
+✔ source archive helper participates in the implementation fingerprint (16.199875ms)
+✔ contract source bytes participate in fingerprint and require a session archive (17.846708ms)
+✔ CLI writes JSON and readable per-attempt blockers, and refreshes from new real sessions (192.75475ms)
+✔ v2 snapshot scope and execution result must agree with raw evidence (19.828583ms)
+✔ two real independent sessions of current archived implementation establish stability without trusting validations (17.566792ms)
+✔ audit derives candidates by exact name and instruction; declarations cannot validate missing real evidence (3.295584ms)
+✔ source reviews bind every supplied source and absolute config to real immutable store archives (43.965292ms)
+✔ source snapshot rejects changed or missing runtime bytes before archival (17.232917ms)
+✔ existing normalized source references are retained without mutating runtime reviews (0.223583ms)
+✔ normal main save callback archives actual implementation and config: disabled (240.21025ms)
+✔ normal main save callback archives actual implementation and config: learned (186.123458ms)
+✔ normal main save callback archives actual implementation and config: continuous-auto (184.250334ms)
+✔ normal main save callback archives actual implementation and config: balance-component (168.004292ms)
+✔ normal main save callback archives actual implementation and config: local-launch-start (167.827459ms)
+✔ normal main save callback archives actual implementation and config: activity-navigation (163.787708ms)
+✔ normal main save callback archives actual implementation and config: entry-recovery (157.964625ms)
+✔ normal main save callback archives actual implementation and config: historical-dwell (145.678042ms)
+✔ normal main save callback archives actual implementation and config: immersive (150.500375ms)
+✔ normal main save callback archives actual implementation and config: immersive-transition (289.809417ms)
+✔ normal main save callback archives actual implementation and config: immersive-quality (151.017084ms)
+✔ normal main save callback archives actual implementation and config: flash-return (147.970875ms)
+✔ normal main save callback archives actual implementation and config: controller-panel (401.318125ms)
+✔ normal main save callback archives actual implementation and config: controller-shop (236.203833ms)
+✔ normal main save callback archives actual implementation and config: flow-optimization (145.5515ms)
+✔ normal main save callback archives actual implementation and config: mutated (123.850083ms)
+ℹ tests 316
+ℹ suites 0
+ℹ pass 316
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33931.841416

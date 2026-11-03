@@ -1,0 +1,9 @@
+app: netease_music
+name: 网易云音乐
+package: com.netease.cloudmusic
+launch_wait: 7.0
+window: 08:00-12:00
+verify_any:
+- 已签到
+- 今日已签
+- 签到成功

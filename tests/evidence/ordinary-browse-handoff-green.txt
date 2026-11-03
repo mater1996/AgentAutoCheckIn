@@ -1,0 +1,13 @@
+STAGE select_task
+STAGE open_task
+STAGE settle
+STAGE task_receipt
+✔ run236 saved ordinary browse response hands open_task to the first new completed receipt without another model or input (43.830709ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 169.205084

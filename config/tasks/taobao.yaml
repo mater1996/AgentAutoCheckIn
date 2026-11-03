@@ -1,0 +1,22 @@
+# 任务资格由全量清单、当前上下文和实际要求的显式评估提供。
+# 名称规则、按钮坐标和历史模板都不能证明当前任务可执行。
+platform: taobao
+tier_policy: prefer_safe
+rules: []
+
+planning:
+  assessment: full_context_observation
+  # 仅明确开启受监督学习时才使用此上限；不是自动执行许可。
+  max_learning_tasks: 1
+  capabilities:
+    - ordinary_in_app_browse
+    - ordinary_in_app_search
+
+# 静态活动背景。收益规划以当前清单中的真实档位/奖励为准。
+tiers:
+  - { at: 3, reward: 30 }
+  - { at: 10, reward: 50 }
+  - { at: 20, reward: 100 }
+
+# 未配置 task 耗时、token 用量或 token 单价；未知成本保留 null。
+# 任务实测数据须带精确任务/要求、runId 和来源，不能套给其他任务。
